@@ -89,8 +89,7 @@ studentSchema.methods.isPasswordCorrect = async function (givenPassword) {
   console.log("user given password", givenPassword);
   return await bcrypt.compare(givenPassword, this.password);
 };
-const AccessToken = "fQwQko1bL9YAGPatfM/pDu5inYBLwaGd6cDqqHsQiYM=";
-const RefreshToken = "pXyu/50QKLz3NxFs8+L7ZOXBKz/9DUgljsnWTZ+CW0U=";
+
 studentSchema.methods.generateAccessToken = async function () {
   return jsonwebtoken.sign(
     {
@@ -99,7 +98,7 @@ studentSchema.methods.generateAccessToken = async function () {
       email: this.emailId,
       fullName: this.fullName,
     },
-    AccessToken,
+    process.env.JWT_ACCESS_TOKEN,
     { expiresIn: "1d" }
   );
 };
@@ -108,7 +107,7 @@ studentSchema.methods.generateRefreshToken = async function () {
     {
       _id: this._id,
     },
-    RefreshToken,
+    process.env.JWT_REFRESH_TOKEN,
     { expiresIn: "10d" }
   );
 };

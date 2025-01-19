@@ -21,4 +21,4 @@ const semsterSchema = new Schema({
   },
 });
 
-export const Semester = mongoose.model("Semester", adminSchema);
+export const Semester = mongoose.model("Semester", semsterSchema);

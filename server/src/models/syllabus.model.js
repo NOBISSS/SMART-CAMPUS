@@ -19,4 +19,4 @@ const syllabusSchema = new Schema({
   },
 });
 
-export const Semester = mongoose.model("Semester", adminSchema);
+export const Syllabus = mongoose.model("Syllabus", syllabusSchema);

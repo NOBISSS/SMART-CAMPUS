@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { DB_NAME } from "../constants.js";
 import { Admin } from "../models/admins.model.js";
 import { Student } from "../models/students.model.js";
+import { hashPassword } from "../utils/hashPassword.util.js";
 dotenv.config({ path: "../.env" });
 mongoose
   .connect(`${process.env.MONGODB_URI}/${DB_NAME}`, {})
@@ -13,10 +14,6 @@ mongoose
   .catch((error) => {
     console.error("Error connecting Database", error);
   });
-
-const hashPassword = async (plainPassword) => {
-  return await bcrypt.hash(plainPassword, 10);
-};
 
 const insertData = async () => {
   try {

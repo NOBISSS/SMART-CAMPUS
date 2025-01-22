@@ -4,13 +4,12 @@ import { TempOTP } from "../models/tempOTPs.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { hashPassword } from "../utils/hashPassword.util.js";
 import { checkInput } from "../utils/inputChecker.util.js";
 import sendMail from "../utils/mailer.util.js";
 
-const generateAccessAndRefreshToken = asyncHandler(async (EnrollmentId) => {
+const generateAccessAndRefreshToken = async (enrollmentId) => {
   try {
-    const student = await Student.findOne({ enrollmentId: EnrollmentId });
+    const student = await Student.findById(enrollmentId);
     if (!student) {
       throw new ApiError(404, "Student not found");
     }
@@ -26,7 +25,7 @@ const generateAccessAndRefreshToken = asyncHandler(async (EnrollmentId) => {
       "Somthing went wrong while generating access and refresh tokens"
     );
   }
-});
+};
 
 const registerStudent = asyncHandler(async (req, res) => {
   const { enrollId, password, confirmPassword } = req.body;
@@ -48,7 +47,9 @@ const registerStudent = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Student already exist");
   }
   if (password == confirmPassword) {
-    student.password = await hashPassword(String(password));
+    // student.updateOne({ $set: { password: password } });
+    student.$set({ password: password });
+    // student.password = await hashPassword(String(password));
   } else {
     throw new ApiError(404, { message: "Both passwords are different" });
   }
@@ -125,7 +126,6 @@ const loginStudent = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
   let student = await checkInput(input);
-  console.log(student);
   if (!student.isRegistered) {
     throw new ApiError(404, "Student has not registered");
   }
@@ -160,8 +160,9 @@ const loginStudent = asyncHandler(async (req, res) => {
     );
 });
 
-const updatePassword = asyncHandler(asyncHandler(async (req,res) => {
-  const {newPassword,confirmNewPassword} = req.body;
-
-}))
-export { loginStudent, registerStudent, verifyOTP, updatePassword };
+const updatePassword = asyncHandler(
+  asyncHandler(async (req, res) => {
+    const { newPassword, confirmNewPassword } = req.body;
+  })
+);
+export { loginStudent, registerStudent, updatePassword, verifyOTP };

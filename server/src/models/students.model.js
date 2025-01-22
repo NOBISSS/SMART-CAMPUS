@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import * as bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
 import mongoose, { Schema } from "mongoose";
 /* 
@@ -88,9 +88,7 @@ studentSchema.pre("save", async function (next) {
 });
 
 studentSchema.methods.isPasswordCorrect = async function (givenPassword) {
-  console.log("Actual password", this.password);
-  console.log("user given password", givenPassword);
-  return bcrypt.compare(givenPassword, this.password);
+  return await bcrypt.compareSync(givenPassword, this.password);
 };
 
 studentSchema.methods.generateAccessToken = async function () {
@@ -98,7 +96,7 @@ studentSchema.methods.generateAccessToken = async function () {
     {
       _id: this._id,
       enrollmentId: this.enrollmentId,
-      email: this.emailId,
+      emailId: this.emailId,
       fullName: this.fullName,
     },
     process.env.JWT_ACCESS_TOKEN,

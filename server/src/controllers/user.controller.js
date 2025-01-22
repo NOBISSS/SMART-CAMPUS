@@ -160,4 +160,8 @@ const loginStudent = asyncHandler(async (req, res) => {
     );
 });
 
-export { loginStudent, registerStudent, verifyOTP };
+const updatePassword = asyncHandler(asyncHandler(async (req,res) => {
+  const {newPassword,confirmNewPassword} = req.body;
+
+}))
+export { loginStudent, registerStudent, verifyOTP, updatePassword };

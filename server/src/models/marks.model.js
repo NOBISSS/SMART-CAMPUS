@@ -17,11 +17,11 @@ const marksSchema = new Schema(
       required: true,
     },
     enrollId: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: "Student",
     },
     semester: {
-      type: Schema.Types.ObjectId,
+      type: Number,
       ref: "Semester",
     },
   },

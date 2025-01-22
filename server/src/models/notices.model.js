@@ -13,7 +13,7 @@ const noticeSchema = new Schema(
       required: true,
     },
     semester: {
-      type: Schema.Types.ObjectId,
+      type: Number,
       ref: "Semester",
     },
     NoticeDetails: {

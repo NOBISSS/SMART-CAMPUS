@@ -68,7 +68,7 @@ const studentSchema = new Schema(
       default: false,
     },
     semester: {
-      type: Schema.Types.ObjectId,
+      type: Number,
       ref: "Semester",
     },
     refreshToken: {
@@ -90,7 +90,7 @@ studentSchema.pre("save", async function (next) {
 studentSchema.methods.isPasswordCorrect = async function (givenPassword) {
   console.log("Actual password", this.password);
   console.log("user given password", givenPassword);
-  return await bcrypt.compare(givenPassword, this.password);
+  return bcrypt.compare(givenPassword, this.password);
 };
 
 studentSchema.methods.generateAccessToken = async function () {

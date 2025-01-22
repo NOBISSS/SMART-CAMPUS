@@ -11,7 +11,7 @@ const syllabusSchema = new Schema({
     unique: true,
   },
   semester: {
-    type: Schema.Types.ObjectId,
+    type: Number,
     ref: "Semester",
   },
   syllabusFile: {

@@ -8,7 +8,6 @@ import { hashPassword } from "../utils/hashPassword.util.js";
 import sendMail from "../utils/mailer.util.js";
 
 const registerStudent = asyncHandler(async (req, res) => {
-  try {
     const { enrollId, password, confirmPassword } = req.body;
     if (
       [enrollId, password, confirmPassword].some((field) => {
@@ -51,12 +50,8 @@ const registerStudent = asyncHandler(async (req, res) => {
           "Otp Generated Successfully"
         )
       );
-  } catch (err) {
-    throw new ApiError(500, "Something unexpected occured from our side");
-  }
 });
 const verifyOTP = asyncHandler(async (req, res) => {
-  try {
     const { otp } = req.body;
     const Gotp = _.toNumber(otp);
     const otpData = await TempOTP.findOne({ Gotp: Gotp });
@@ -92,8 +87,5 @@ const verifyOTP = asyncHandler(async (req, res) => {
       await student.save({ validateBeforeSave: false });
       throw new ApiError(404, "Wrong OTP");
     }
-  } catch (err) {
-    throw new ApiError(500, "Something Unexpected occured from our side");
-  }
 });
 export { registerStudent, verifyOTP };

@@ -16,7 +16,16 @@ const generateAccessAndRefreshToken = asyncHandler(async (EnrollmentId) => {
     }
     const accessToken = student.generateAccessToken();
     const refreshToken = student.generateRefreshToken();
-  } catch (error) {}
+
+    student.refreshToken = refreshToken;
+    await student.save({ validateBeforeSave: false });
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(
+      500,
+      "Somthing went wrong while generating access and refresh tokens"
+    );
+  }
 });
 
 const registerStudent = asyncHandler(async (req, res) => {
@@ -124,6 +133,31 @@ const loginStudent = asyncHandler(async (req, res) => {
   if (!isPasswordValid) {
     throw new ApiError(404, "Invalid Password");
   }
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    student._id
+  );
+  const loggedInStudent = await Student.findById(student._id).select(
+    "-password -refreshToken"
+  );
+  if (!loggedInStudent) {
+    throw new ApiError(500, "Something went wrong from our side");
+  }
+  const options = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+  };
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        { student: loggedInStudent },
+        "Student Logged in successfully"
+      )
+    );
 });
 
 export { loginStudent, registerStudent, verifyOTP };

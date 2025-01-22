@@ -71,6 +71,9 @@ const studentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Semester",
     },
+    refreshToken: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

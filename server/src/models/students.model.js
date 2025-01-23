@@ -98,6 +98,7 @@ studentSchema.methods.generateAccessToken = async function () {
       enrollmentId: this.enrollmentId,
       emailId: this.emailId,
       fullName: this.fullName,
+      role: "student",
     },
     process.env.JWT_ACCESS_TOKEN,
     { expiresIn: "1d" }

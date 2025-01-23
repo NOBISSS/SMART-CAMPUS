@@ -144,3 +144,4 @@ const forgetPassword = asyncHandler(async (req, res) => {
 });
 
 export { forgetPassword, loginAdmin, verifyOTP };
+export default generateAccessAndRefreshToken;

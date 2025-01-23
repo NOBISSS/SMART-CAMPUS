@@ -2,6 +2,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import Adminrouter from "./routes/admin.route.js";
+import loginRouter from "./routes/login.route.js";
 import studentRouter from "./routes/student.route.js";
 
 const app = express();
@@ -20,5 +21,5 @@ app.use(cookieParser());
 
 app.use("/api/v1/student", studentRouter);
 app.use("/api/v1/admin", Adminrouter);
-
+app.use("/api/v1/auth", loginRouter);
 export { app };

@@ -64,9 +64,10 @@ adminSchema.methods.generateAccessToken = async function () {
   return jsonwebtoken.sign(
     {
       _id: this._id,
-      enrollmentId: this.enrollmentId,
+      adminId: this.enrollmentId,
       email: this.emailId,
       fullName: this.fullName,
+      role: "admin",
     },
     process.env.JWT_ACCESS_TOKEN,
     { expiresIn: "1d" }

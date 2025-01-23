@@ -259,7 +259,7 @@ export {
   verifyForgetPasswordOTP,
   verifyOTP,
 };
-
+export default generateAccessAndRefreshToken;
 const verifyOTPTest = asyncHandler(async (req, res) => {
   const { otp } = req.body;
   if (

@@ -15,9 +15,9 @@ const upload = multer();
 router.route("/register").post(upload.none(), registerStudent);
 router.route("/register/verify").post(upload.none(), verifyOTP);
 router.route("/login").post(upload.none(), loginStudent);
-router.route("/forgetPassword").post(upload.none(), forgetPassword);
+router.route("/forgetpassword").post(upload.none(), forgetPassword);
 router
-  .route("/forgetPassword/verify")
+  .route("/forgetpassword/verify")
   .post(upload.none(), verifyForgetPasswordOTP);
 
 //secured routes :

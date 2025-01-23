@@ -6,9 +6,9 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { checkInput } from "../utils/inputChecker.util.js";
 
-const generateAccessAndRefreshToken = async (enrollmentId) => {
+const generateAccessAndRefreshToken = async (adminId) => {
   try {
-    const admin = await Admin.findById(enrollmentId);
+    const admin = await Admin.findById(adminId);
     if (!admin) {
       throw new ApiError(404, "Student not found");
     }
@@ -42,7 +42,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
   if (!otpData) {
     throw new ApiError(404, "Enter a valid OTP");
   }
-  const enrollId = otpData.enrollmentId;
+  const enrollId = otpData.adminId;
   const expiryDate = otpData.expiryAt;
   const isExpired = otpData.isExpired;
   const password = otpData.password;

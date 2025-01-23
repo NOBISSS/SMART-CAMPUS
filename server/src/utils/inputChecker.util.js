@@ -1,5 +1,5 @@
-import { Student } from "../models/students.model.js";
 import { Admin } from "../models/admins.model.js";
+import { Student } from "../models/students.model.js";
 import { ApiError } from "./ApiError.js";
 
 export async function checkInput(input, type) {
@@ -17,8 +17,7 @@ export async function checkInput(input, type) {
       }
     }
     return student;
-  }
-  else if(type=="admin"){
+  } else if (type == "admin") {
     let admin;
     if (input.includes("@")) {
       admin = await Admin.findOne({ emailId: input });
@@ -26,9 +25,9 @@ export async function checkInput(input, type) {
         throw new ApiError(404, "No admin found for this email");
       }
     } else {
-      admin = await Admin.findOne({ enrollmentId: input });
+      admin = await Admin.findOne({ adminId: input });
       if (!admin) {
-        throw new ApiError(404, "No admin found for this EnrollmentId");
+        throw new ApiError(404, "No admin found for this adminId");
       }
     }
     return admin;

@@ -19,6 +19,10 @@ const OTPs = new Schema(
     password: {
       type: String,
     },
+    isForget: {
+      type: Boolean,
+      default: false,
+    },
     isExpired: {
       type: Boolean,
       default: false,

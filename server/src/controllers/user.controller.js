@@ -86,7 +86,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
   const enrollId = otpData.enrollmentId;
   const expiryDate = otpData.expiryAt;
   const isExpired = otpData.isExpired;
-
+  const password = otpData.password;
   const student = await Student.findOne({ enrollmentId: enrollId });
   if (!student) {
     throw new ApiError(400, { message: "Student not found" });
@@ -94,20 +94,17 @@ const verifyOTP = asyncHandler(async (req, res) => {
   if (isExpired || Date.now() > expiryDate) {
     otpData.isExpired = true;
     await TempOTP.deleteOne({ Gotp: Gotp });
-    student.password = null;
-    await student.save({ validateBeforeSave: false });
     throw new ApiError(404, "OTP is expired, Generate new OTP");
   }
   if (otpData.Gotp === Gotp) {
     student.isRegistered = true;
+    student.$set({ password: password });
     await student.save({ validateBeforeSave: false });
     await TempOTP.deleteOne({ Gotp: Gotp });
     return res
       .status(200)
       .json(new ApiResponse(200, { student }, "User Registered Successfully"));
   } else {
-    student.password = null;
-    await student.save({ validateBeforeSave: false });
     throw new ApiError(404, "Wrong OTP");
   }
 });

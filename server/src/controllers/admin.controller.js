@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { checkInput } from "../utils/inputChecker.util.js";
+import sendMail from "../utils/mailer.util.js";
 
 const generateAccessAndRefreshToken = async (adminId) => {
   try {
@@ -37,7 +38,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
   }
   const Gotp = _.toNumber(otp);
   const otpData = await TempOTP.findOne({
-    $and: [{ Gotp: Gotp, isForget: false }],
+    $and: [{ Gotp: Gotp, isForget: true }],
   });
   if (!otpData) {
     throw new ApiError(404, "Enter a valid OTP");
@@ -56,13 +57,12 @@ const verifyOTP = asyncHandler(async (req, res) => {
     throw new ApiError(404, "OTP is expired, Generate new OTP");
   }
   if (otpData.Gotp === Gotp) {
-    admin.isRegistered = true;
     admin.$set({ password: password });
     await admin.save({ validateBeforeSave: false });
     await TempOTP.deleteOne({ Gotp: Gotp });
     return res
       .status(200)
-      .json(new ApiResponse(200, { admin }, "User Registered Successfully"));
+      .json(new ApiResponse(200, { admin }, "Password changed successfully"));
   } else {
     throw new ApiError(404, "Wrong OTP");
   }
@@ -112,4 +112,35 @@ const loginAdmin = asyncHandler(async (req, res) => {
     );
 });
 
-export { loginAdmin, verifyOTP };
+const forgetPassword = asyncHandler(async (req, res) => {
+  const { input, newPassword, confirmNewPassword } = req.body;
+  if (
+    [input, newPassword, confirmNewPassword].some((field) => {
+      return field?.trim() === "";
+    })
+  ) {
+    throw new ApiError(400, "All fields are required");
+  }
+  const admin = await checkInput(input, "admin");
+  if (newPassword !== confirmNewPassword) {
+    throw new ApiError(404, "Given password didn't match");
+  }
+  const Gotp = await sendMail(admin.emailId);
+  const enrollmentId = admin.adminId;
+  const expiryAt = new Date();
+  expiryAt.setMinutes(expiryAt.getMinutes() + 10);
+  const password = newPassword;
+  const tempOTP = await TempOTP.create({
+    Gotp,
+    enrollmentId,
+    expiryAt,
+    password,
+    isForget: true,
+  });
+  await tempOTP.save({ validateBeforeSave: false });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { admin, Gotp }, "OTP Generated sucessfully"));
+});
+
+export { forgetPassword, loginAdmin, verifyOTP };

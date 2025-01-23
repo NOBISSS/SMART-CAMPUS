@@ -120,7 +120,7 @@ const loginStudent = asyncHandler(async (req, res) => {
   ) {
     throw new ApiError(400, "All fields are required");
   }
-  let student = await checkInput(input);
+  let student = await checkInput(input, "student");
   if (!student.isRegistered) {
     throw new ApiError(404, "Student has not registered");
   }
@@ -185,7 +185,7 @@ const forgetPassword = asyncHandler(async (req, res) => {
   ) {
     throw new ApiError(400, "All fields are required");
   }
-  const student = await checkInput(input);
+  const student = await checkInput(input, "student");
   if (!student.isRegistered) {
     throw new ApiError(404, "Student has not registered");
   }

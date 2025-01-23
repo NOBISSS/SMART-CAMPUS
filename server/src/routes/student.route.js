@@ -7,7 +7,7 @@ import {
   updatePassword,
   verifyForgetPasswordOTP,
   verifyOTP,
-} from "../controllers/user.controller.js";
+} from "../controllers/student.controller.js";
 const router = Router();
 const upload = multer();
 

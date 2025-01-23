@@ -79,7 +79,9 @@ const verifyOTP = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
   const Gotp = _.toNumber(otp);
-  const otpData = await TempOTP.findOne({ Gotp: Gotp });
+  const otpData = await TempOTP.findOne({
+    $and: [{ Gotp: Gotp, isForget: false }],
+  });
   if (!otpData) {
     throw new ApiError(404, "Enter a valid OTP");
   }
@@ -173,4 +175,85 @@ const updatePassword = asyncHandler(
       .json(new ApiResponse(200, {}, "Password changed successfully"));
   })
 );
-export { loginStudent, registerStudent, updatePassword, verifyOTP };
+
+const forgetPassword = asyncHandler(async (req, res) => {
+  const { input, newPassword, confirmNewPassword } = req.body;
+  if (
+    [input, newPassword, confirmNewPassword].some((field) => {
+      return field?.trim() === "";
+    })
+  ) {
+    throw new ApiError(400, "All fields are required");
+  }
+  const student = await checkInput(input);
+  if (!student.isRegistered) {
+    throw new ApiError(404, "Student has not registered");
+  }
+  if (newPassword !== confirmNewPassword) {
+    throw new ApiError(404, "Given password didn't match");
+  }
+  const Gotp = await sendMail(student.emailId);
+  enrollmentId = student.enrollmentId;
+  const expiryAt = new Date();
+  expiryAt.setMinutes(expiryAt.getMinutes() + 10);
+  const tempOTP = await TempOTP.create({
+    Gotp,
+    enrollmentId,
+    expiryAt,
+    password,
+    isForget: true,
+  });
+  await tempOTP.save({ validateBeforeSave: false });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { student, Gotp }, "OTP Generated sucessfully"));
+});
+
+const verifyForgetPasswordOTP = asyncHandler(async (req, res) => {
+  const { otp } = req.body;
+  if (
+    [otp].some((field) => {
+      return field?.trim() === "";
+    })
+  ) {
+    throw new ApiError(400, "All fields are required");
+  }
+  const Gotp = _.toNumber(otp);
+  const otpData = await TempOTP.findOne({
+    $and: [{ Gotp: Gotp, isForget: true }],
+  });
+  if (!otpData) {
+    throw new ApiError(404, "Enter a valid OTP");
+  }
+  const enrollId = otpData.enrollmentId;
+  const expiryDate = otpData.expiryAt;
+  const isExpired = otpData.isExpired;
+  const password = otpData.password;
+  const student = await Student.findOne({ enrollmentId: enrollId });
+  if (!student) {
+    throw new ApiError(400, { message: "Student not found" });
+  }
+  if (isExpired || Date.now() > expiryDate) {
+    otpData.isExpired = true;
+    await TempOTP.deleteOne({ Gotp: Gotp });
+    throw new ApiError(404, "OTP is expired, Generate new OTP");
+  }
+  if (otpData.Gotp === Gotp) {
+    student.$set({ password: password });
+    await student.save({ validateBeforeSave: false });
+    await TempOTP.deleteOne({ Gotp: Gotp });
+    return res
+      .status(200)
+      .json(new ApiResponse(200, { student }, "Password changed successfully"));
+  } else {
+    throw new ApiError(404, "Wrong OTP");
+  }
+});
+export {
+  forgetPassword,
+  loginStudent,
+  registerStudent,
+  updatePassword,
+  verifyForgetPasswordOTP,
+  verifyOTP,
+};

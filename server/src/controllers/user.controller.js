@@ -155,7 +155,22 @@ const loginStudent = asyncHandler(async (req, res) => {
 
 const updatePassword = asyncHandler(
   asyncHandler(async (req, res) => {
-    const { newPassword, confirmNewPassword } = req.body;
+    const { oldPassword, newPassword, confirmNewPassword } = req.body;
+    console.log(req.student);
+    const student = await Student.findById(req.student?._id);
+    const isPasswordValid = await student.isPasswordCorrect(oldPassword);
+    if (!isPasswordValid) {
+      throw new ApiError(404, "Old password is invalid");
+    }
+    if (newPassword !== confirmNewPassword) {
+      throw new ApiError(404, "Given password didn't match");
+    }
+    student.$set({ password: newPassword });
+    await student.save({ validateBeforeSave: false });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Password changed successfully"));
   })
 );
 export { loginStudent, registerStudent, updatePassword, verifyOTP };

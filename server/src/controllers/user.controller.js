@@ -46,21 +46,17 @@ const registerStudent = asyncHandler(async (req, res) => {
   if (student.isRegistered) {
     throw new ApiError(404, "Student already exist");
   }
-  if (password == confirmPassword) {
-    // student.updateOne({ $set: { password: password } });
-    student.$set({ password: password });
-    // student.password = await hashPassword(String(password));
-  } else {
+  if (password !== confirmPassword) {
     throw new ApiError(404, { message: "Both passwords are different" });
   }
   const Gotp = await sendMail(student.emailId);
   const expiryAt = new Date();
   expiryAt.setMinutes(expiryAt.getMinutes() + 10);
-  await student.save({ validateBeforeSave: false });
   const tempOTP = await TempOTP.create({
     Gotp,
     enrollmentId,
     expiryAt,
+    password,
   });
   await tempOTP.save({ validateBeforeSave: false });
   return res

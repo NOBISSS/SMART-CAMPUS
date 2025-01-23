@@ -16,6 +16,9 @@ const OTPs = new Schema(
       type: Date,
       default: Date.now(),
     },
+    password: {
+      type: String,
+    },
     isExpired: {
       type: Boolean,
       default: false,

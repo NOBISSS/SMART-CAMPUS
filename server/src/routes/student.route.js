@@ -2,12 +2,14 @@ import { Router } from "express";
 import multer from "multer";
 import {
   forgetPassword,
+  getStudent,
   loginStudent,
   registerStudent,
   updatePassword,
   verifyForgetPasswordOTP,
   verifyOTP,
 } from "../controllers/student.controller.js";
+import { verifyJWT } from "../middleware/studentAuth.middlewres.js";
 const router = Router();
 const upload = multer();
 
@@ -22,5 +24,6 @@ router
 
 //secured routes :
 router.route("/changepassword").post(upload.none(), updatePassword);
+router.route("/getuser").get(verifyJWT, getStudent);
 
 export default router;

@@ -251,8 +251,16 @@ const verifyForgetPasswordOTP = asyncHandler(async (req, res) => {
   }
 });
 
+const getStudent = asyncHandler(async (req, res) => {
+  console.log(req.user);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "Current user Details"));
+});
+
 export {
   forgetPassword,
+  getStudent,
   loginStudent,
   registerStudent,
   updatePassword,

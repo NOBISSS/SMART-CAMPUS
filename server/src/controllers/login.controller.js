@@ -26,18 +26,20 @@ const hybridLogin = asyncHandler(async (req, res) => {
       throw new ApiError(404, "Invalid Password");
     }
     const { accessToken, refreshToken } =
-      await generateAccessAndRefreshTokenStudent(student._id);
+      await generateAccessAndRefreshTokenStudent(student.enrollmentId);
     const loggedInStudent = await Student.findById(student._id).select(
       "-password -refreshToken"
     );
+    // console.log(accessToken);
     if (!loggedInStudent) {
       throw new ApiError(500, "Something went wrong from our side");
     }
     const options = {
       httpOnly: true,
-      path: "/",
       // secure: true,
       // sameSite: "None",
+      // maxAge: 24 * 60 * 60 * 1000,
+      // path: "/",
     };
     return res
       .status(200)

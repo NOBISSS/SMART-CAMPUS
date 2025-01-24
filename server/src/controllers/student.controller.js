@@ -9,13 +9,15 @@ import sendMail from "../utils/mailer.util.js";
 
 const generateAccessAndRefreshToken = async (enrollmentId) => {
   try {
-    const student = await Student.findById(enrollmentId);
+    const student = await Student.findOne({ enrollmentId: enrollmentId });
     if (!student) {
       throw new ApiError(404, "Student not found");
     }
-    const accessToken = student.generateAccessToken();
-    const refreshToken = student.generateRefreshToken();
-
+    const accessToken = await student.generateAccessToken();
+    const refreshToken = await student.generateRefreshToken();
+    if (!accessToken || !refreshToken) {
+      throw new ApiError(404, "The tokens are not generated");
+    }
     student.refreshToken = refreshToken;
     await student.save({ validateBeforeSave: false });
     return { accessToken, refreshToken };

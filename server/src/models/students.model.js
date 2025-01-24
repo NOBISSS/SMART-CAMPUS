@@ -1,5 +1,5 @@
 import * as bcrypt from "bcrypt";
-import jsonwebtoken from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import mongoose, { Schema } from "mongoose";
 /* 
      1.EnrollmentId	
@@ -92,7 +92,7 @@ studentSchema.methods.isPasswordCorrect = async function (givenPassword) {
 };
 
 studentSchema.methods.generateAccessToken = async function () {
-  return jsonwebtoken.sign(
+  return jwt.sign(
     {
       _id: this._id,
       enrollmentId: this.enrollmentId,
@@ -105,7 +105,7 @@ studentSchema.methods.generateAccessToken = async function () {
   );
 };
 studentSchema.methods.generateRefreshToken = async function () {
-  return jsonwebtoken.sign(
+  return jwt.sign(
     {
       _id: this._id,
     },

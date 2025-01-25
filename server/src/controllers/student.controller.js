@@ -7,9 +7,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { checkInput } from "../utils/inputChecker.util.js";
 import sendMail from "../utils/mailer.util.js";
 
-const   generateAccessAndRefreshToken = async (enrollmentId) => {
+const generateAccessAndRefreshToken = async (enrollmentId) => {
   try {
-    const student = await Student.findOne({ enrollmentId: enrollmentId });
+    const student = await Student.findById(enrollmentId);
     if (!student) {
       throw new ApiError(404, "Student not found");
     }
@@ -160,7 +160,6 @@ const loginStudent = asyncHandler(async (req, res) => {
 const updatePassword = asyncHandler(
   asyncHandler(async (req, res) => {
     const { oldPassword, newPassword, confirmNewPassword } = req.body;
-    console.log(req.student);
     const student = await Student.findById(req.student?._id);
     const isPasswordValid = await student.isPasswordCorrect(oldPassword);
     if (!isPasswordValid) {
@@ -254,7 +253,6 @@ const verifyForgetPasswordOTP = asyncHandler(async (req, res) => {
 });
 
 const getStudent = asyncHandler(async (req, res) => {
-  console.log(req.user);
   return res
     .status(200)
     .json(new ApiResponse(200, req.user, "Current user Details"));
@@ -269,7 +267,6 @@ export {
   verifyForgetPasswordOTP,
   verifyOTP,
 };
-export default generateAccessAndRefreshToken;
 const verifyOTPTest = asyncHandler(async (req, res) => {
   const { otp } = req.body;
   if (

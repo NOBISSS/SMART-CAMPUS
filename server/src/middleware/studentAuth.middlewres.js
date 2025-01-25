@@ -12,12 +12,11 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
   }
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_ACCESS_TOKEN);
-    console.log(decodedToken);
     const user = await Student.findById(decodedToken?._id).select(
       "-password -refreshToken"
     );
     if (!user) {
-      throw new ApiError(401, "anuathorized user");
+      throw new ApiError(401, "Unauthorized user");
     }
     req.user = user;
     next();

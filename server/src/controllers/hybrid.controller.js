@@ -7,94 +7,103 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { checkInput } from "../utils/inputChecker.util.js";
 import sendMail from "../utils/mailer.util.js";
-import generateAccessAndRefreshTokenAdmin from "./admin.controller.js";
-import generateAccessAndRefreshTokenStudent from "./student.controller.js";
+
+const generateAccessAndRefreshToken = async (userId, role) => {
+  try {
+    const user =
+      role === "student"
+        ? await Student.findById(userId)
+        : await Admin.findById(userId);
+    if (!user) {
+      throw new ApiError(404, "Admin not found");
+    }
+    const accessToken = await user.generateAccessToken();
+    const refreshToken = await user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(
+      500,
+      "Somthing went wrong while generating access and refresh tokens"
+    );
+  }
+};
+
 const hybridLogin = asyncHandler(async (req, res) => {
   const { input, password, role } = req.body;
-  if (
-    [input, password, role].some((field) => {
-      return field?.trim() === "";
-    })
-  ) {
+
+  // Check for missing fields
+  if ([input, password, role].some((field) => !field?.trim())) {
     throw new ApiError(400, "All fields are required");
   }
+
+  // Define shared cookie options
+  const options = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    path: "/",
+  };
+
+  // Common login logic for both students and admins
+  const loginUser = async (user, role) => {
+    const isPasswordValid = await user.isPasswordCorrect(password);
+    if (!isPasswordValid) {
+      throw new ApiError(404, "Invalid Password");
+    }
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+      user._id,
+      role
+    );
+    if (!accessToken || !refreshToken) {
+      throw new ApiError(404, "The tokens are not generated");
+    }
+    const loggedInUser =
+      role === "student"
+        ? await Student.findById(user._id).select("-password -refreshToken")
+        : await Admin.findById(user._id).select("-password -refreshToken");
+
+    if (!loggedInUser) {
+      throw new ApiError(500, "Something went wrong from our side");
+    }
+
+    return res
+      .status(200)
+      .cookie(
+        `accessToken${role === "admin" ? "Admin" : ""}`,
+        accessToken,
+        options
+      )
+      .cookie(
+        `refreshToken${role === "admin" ? "Admin" : ""}`,
+        refreshToken,
+        options
+      )
+      .json(
+        new ApiResponse(
+          200,
+          { [role]: loggedInUser, role },
+          `${role.charAt(0).toUpperCase() + role.slice(1)} logged in successfully`
+        )
+      );
+  };
+
   if (role === "student") {
     let student = await checkInput(input, role);
     if (!student.isRegistered) {
       throw new ApiError(404, "Student has not registered");
     }
-    const isPasswordValid = await student.isPasswordCorrect(password);
-    if (!isPasswordValid) {
-      throw new ApiError(404, "Invalid Password");
-    }
-    const { accessToken, refreshToken } =
-      await generateAccessAndRefreshTokenStudent(student.enrollmentId);
-    const loggedInStudent = await Student.findById(student._id).select(
-      "-password -refreshToken"
-    );
-    // console.log(accessToken);
-    if (!loggedInStudent) {
-      throw new ApiError(500, "Something went wrong from our side");
-    }
-    const options = {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      maxAge: 24 * 60 * 60 * 1000,
-      path: "/",
-    };
-    return res
-      .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
-      .json(
-        new ApiResponse(
-          200,
-          { student: loggedInStudent, role: "student" },
-          "Student Logged in successfully"
-        )
-      );
+    return await loginUser(student, role);
   } else if (role === "admin") {
     let admin = await checkInput(input, role);
     if (!admin) {
       throw new ApiError(404, "Admin not found");
     }
-    const isPasswordValid = await admin.isPasswordCorrect(password);
-    if (!isPasswordValid) {
-      throw new ApiError(404, "Invalid Password");
-    }
-    const { accessToken, refreshToken } =
-      await generateAccessAndRefreshTokenAdmin(admin._id);
-    const loggedInAdmin = await Admin.findById(admin._id).select(
-      "-password -refreshToken"
-    );
-    console.log(
-      "Admin Login Conroller Logged Token:1",
-      accessToken,
-      "Token2 :",
-      refreshToken
-    );
-    if (!loggedInAdmin) {
-      throw new ApiError(500, "Something went wrong from our side");
-    }
-    const options = {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      maxAge: 24 * 60 * 60 * 1000,
-      path: "/",
-    };
-    return res
-      .status(200)
-      .cookie("accessTokenAdmin", accessToken, options)
-      .cookie("refreshTokenAdmin", refreshToken, options)
-      .json(
-        new ApiResponse(
-          200,
-          { admin: loggedInAdmin, role: "admin" },
-          "Admin Logged in successfully"
-        )
-      );
+    return await loginUser(admin, role);
   } else {
     return res.status(400).json({ message: "Invalid role selected." });
   }

@@ -7,7 +7,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { checkInput } from "../utils/inputChecker.util.js";
 import sendMail from "../utils/mailer.util.js";
 
-const generateAccessAndRefreshToken = async (enrollmentId) => {
+const   generateAccessAndRefreshToken = async (enrollmentId) => {
   try {
     const student = await Student.findOne({ enrollmentId: enrollmentId });
     if (!student) {

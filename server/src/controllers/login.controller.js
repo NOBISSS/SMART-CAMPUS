@@ -39,7 +39,7 @@ const hybridLogin = asyncHandler(async (req, res) => {
       secure: true,
       sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000,
-      path: "/",
+      path: "/student-dashboard.html",
     };
     return res
       .status(200)
@@ -48,7 +48,7 @@ const hybridLogin = asyncHandler(async (req, res) => {
       .json(
         new ApiResponse(
           200,
-          { student: loggedInStudent },
+          { student: loggedInStudent, role: "student" },
           "Student Logged in successfully"
         )
       );
@@ -66,6 +66,7 @@ const hybridLogin = asyncHandler(async (req, res) => {
     const loggedInAdmin = await Admin.findById(admin._id).select(
       "-password -refreshToken"
     );
+    console.log(accessToken, refreshToken);
     if (!loggedInAdmin) {
       throw new ApiError(500, "Something went wrong from our side");
     }
@@ -73,15 +74,17 @@ const hybridLogin = asyncHandler(async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "None",
+      maxAge: 24 * 60 * 60 * 1000,
+      path: "/admin-dashboard.html",
     };
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
+      .cookie("accessTokenAdmin", accessToken, options)
+      .cookie("refreshTokenAdmin", refreshToken, options)
       .json(
         new ApiResponse(
           200,
-          { admin: loggedInAdmin },
+          { admin: loggedInAdmin, role: "admin" },
           "Admin Logged in successfully"
         )
       );

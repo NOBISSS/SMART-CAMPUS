@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import jsonwebtoken from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import mongoose, { Schema } from "mongoose";
 /* 
      1.AdminId
@@ -43,6 +43,9 @@ const adminSchema = new Schema(
       type: String,
       required: true,
     },
+    refreshToken: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
@@ -61,7 +64,7 @@ adminSchema.methods.isPasswordCorrect = async function (givenPassword) {
 };
 
 adminSchema.methods.generateAccessToken = async function () {
-  return jsonwebtoken.sign(
+  return jwt.sign(
     {
       _id: this._id,
       adminId: this.enrollmentId,
@@ -74,7 +77,7 @@ adminSchema.methods.generateAccessToken = async function () {
   );
 };
 adminSchema.methods.generateRefreshToken = async function () {
-  return jsonwebtoken.sign(
+  return jwt.sign(
     {
       _id: this._id,
     },

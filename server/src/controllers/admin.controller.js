@@ -11,14 +11,14 @@ const generateAccessAndRefreshToken = async (adminId) => {
   try {
     const admin = await Admin.findById(adminId);
     if (!admin) {
-      throw new ApiError(404, "Student not found");
+      throw new ApiError(404, "Admin not found");
     }
-    const accessToken = admin.generateAccessToken();
-    const refreshToken = admin.generateRefreshToken();
+    const accessTokenAdmin = await admin.generateAccessToken();
+    const refreshTokenAdmin = await admin.generateRefreshToken();
 
     admin.refreshToken = refreshToken;
     await admin.save({ validateBeforeSave: false });
-    return { accessToken, refreshToken };
+    return { accessTokenAdmin, refreshTokenAdmin };
   } catch (error) {
     throw new ApiError(
       500,
@@ -143,5 +143,11 @@ const forgetPassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { admin, Gotp }, "OTP Generated sucessfully"));
 });
 
-export { forgetPassword, loginAdmin, verifyOTP };
+const getAdmin = asyncHandler(async (req, res) => {
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req?.user, "Admin Data Fetched Sucessfully"));
+});
+
+export { forgetPassword, getAdmin, loginAdmin, verifyOTP };
 export default generateAccessAndRefreshToken;

@@ -2,9 +2,11 @@ import { Router } from "express";
 import multer from "multer";
 import {
   forgetPassword,
+  getAdmin,
   loginAdmin,
   verifyOTP,
 } from "../controllers/admin.controller.js";
+import verifyJWT from "../middleware/adminAuth.middlewres.js";
 const router = Router();
 const upload = multer();
 
@@ -15,5 +17,6 @@ router.route("/forgetpassword/verify").post(upload.none(), verifyOTP);
 
 //secured routes :
 // router.route("/changepassword").post(upload.none(), updatePassword);
+router.route("/getuser").get(verifyJWT, getAdmin);
 
 export default router;

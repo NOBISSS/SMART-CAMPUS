@@ -22,12 +22,6 @@ app.use(
     credentials: true, // Allow cookies
   })
 );
-// app.use(
-//   cors({
-//     origin: "http://localhost:5500",
-//     credentials: true,
-//   })
-// );
 app.use(cookieParser());
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extends: true, limit: "16kb", extended: true }));

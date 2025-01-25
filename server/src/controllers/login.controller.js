@@ -39,7 +39,7 @@ const hybridLogin = asyncHandler(async (req, res) => {
       secure: true,
       sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000,
-      path: "/student-dashboard.html",
+      path: "/",
     };
     return res
       .status(200)
@@ -66,7 +66,12 @@ const hybridLogin = asyncHandler(async (req, res) => {
     const loggedInAdmin = await Admin.findById(admin._id).select(
       "-password -refreshToken"
     );
-    console.log(accessToken, refreshToken);
+    console.log(
+      "Admin Login Conroller Logged Token:1",
+      accessToken,
+      "Token2 :",
+      refreshToken
+    );
     if (!loggedInAdmin) {
       throw new ApiError(500, "Something went wrong from our side");
     }
@@ -75,7 +80,7 @@ const hybridLogin = asyncHandler(async (req, res) => {
       secure: true,
       sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000,
-      path: "/admin-dashboard.html",
+      path: "/",
     };
     return res
       .status(200)

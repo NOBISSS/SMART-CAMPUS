@@ -13,12 +13,12 @@ const generateAccessAndRefreshToken = async (adminId) => {
     if (!admin) {
       throw new ApiError(404, "Admin not found");
     }
-    const accessTokenAdmin = await admin.generateAccessToken();
-    const refreshTokenAdmin = await admin.generateRefreshToken();
+    const accessToken = await admin.generateAccessToken();
+    const refreshToken = await admin.generateRefreshToken();
 
     admin.refreshToken = refreshToken;
     await admin.save({ validateBeforeSave: false });
-    return { accessTokenAdmin, refreshTokenAdmin };
+    return { accessToken, refreshToken };
   } catch (error) {
     throw new ApiError(
       500,

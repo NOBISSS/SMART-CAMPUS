@@ -6,7 +6,7 @@ const OTPs = new Schema(
       type: Number,
       required: true,
     },
-    enrollmentId: {
+    userId: {
       type: String,
       ref: "Student",
       required: true,
@@ -18,6 +18,11 @@ const OTPs = new Schema(
     },
     password: {
       type: String,
+    },
+    role: {
+      type: String,
+      enum: ["student", "admin"],
+      default: "student",
     },
     isForget: {
       type: Boolean,

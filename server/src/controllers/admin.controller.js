@@ -114,7 +114,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
 
 const forgetPassword = asyncHandler(async (req, res) => {
   const { input, newPassword, confirmNewPassword } = req.body;
-  if (
+  if (  
     [input, newPassword, confirmNewPassword].some((field) => {
       return field?.trim() === "";
     })
@@ -122,17 +122,17 @@ const forgetPassword = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
   const admin = await checkInput(input, "admin");
-  if (newPassword !== confirmNewPassword) {
-    throw new ApiError(404, "Given password didn't match");
-  }
+    if (newPassword !== confirmNewPassword) {
+      throw new ApiError(404, "Given password didn't match");
+    }
   const Gotp = await sendMail(admin.emailId);
-  const enrollmentId = admin.adminId;
+  const adminId = admin.adminId;
   const expiryAt = new Date();
   expiryAt.setMinutes(expiryAt.getMinutes() + 10);
   const password = newPassword;
   const tempOTP = await TempOTP.create({
     Gotp,
-    enrollmentId,
+    adminId,
     expiryAt,
     password,
     isForget: true,

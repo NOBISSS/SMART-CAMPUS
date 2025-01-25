@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { Admin } from "../models/admins.model.js";
 import { Student } from "../models/students.model.js";
 import { TempOTP } from "../models/tempOTPs.model.js";
@@ -6,7 +7,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { checkInput } from "../utils/inputChecker.util.js";
 import sendMail from "../utils/mailer.util.js";
-
+import generateAccessAndRefreshTokenAdmin from "./admin.controller.js";
+import generateAccessAndRefreshTokenStudent from "./student.controller.js";
 const hybridLogin = asyncHandler(async (req, res) => {
   const { input, password, role } = req.body;
   if (
@@ -158,15 +160,15 @@ const verifyHybridOTP = asyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(400, { message: "user not found" });
   }
+  if (role === "student" && !user.isRegistered) {
+    throw new ApiError(404, "Student has not registered yet");
+  }
   if (isExpired || Date.now() > expiryDate) {
     otpData.isExpired = true;
     await TempOTP.deleteOne({ Gotp: Gotp });
     throw new ApiError(404, "OTP is expired, Generate new OTP");
   }
   if (otpData.Gotp === Gotp) {
-    if (role ==="student") {
-      user.isRegistered = true;
-    }
     user.$set({ password: password });
     await user.save({ validateBeforeSave: false });
     await TempOTP.deleteOne({ Gotp: Gotp });

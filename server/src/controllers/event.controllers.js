@@ -17,18 +17,15 @@ const CreateEvent = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
   let eventImageLocalPath;
-  if (
-    req.files &&
-    Array.isArray(req.files.eventImage) &&
-    req.files.eventImage.length > 0
-  ) {
-    eventImageLocalPath = req.files.eventImage[0].path;
-  }
+  eventImageLocalPath = req.file?.path; // Not req.files for single upload
+
+  console.log(eventImageLocalPath);
   let eventImage;
   try {
     if (eventImageLocalPath) {
       eventImage = await uploadOnCloudinary(eventImageLocalPath);
     }
+    console.log(eventImage);
   } catch (err) {
     throw new ApiError(500, { message: "Failed to upload EventImage" });
   }

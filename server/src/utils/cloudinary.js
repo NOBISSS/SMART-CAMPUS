@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
 import dotenv from "dotenv";
+import fs from "fs";
 dotenv.config();
 //configure cloudinary
 cloudinary.config({
@@ -16,7 +16,7 @@ const uploadOnCloudinary = async (localFilePath) => {
     }
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
-      folder: "smartCampus/event",
+      folder: "SmartCampus/Events",
     });
     console.log("file uploaded on cloudinary" + response.url);
     //once file is uploaded we would like to delete it from our servers
@@ -39,4 +39,4 @@ const deleteFromCloudinary = async (publicId) => {
   }
 };
 
-export { uploadOnCloudinary, deleteFromCloudinary };
+export { deleteFromCloudinary, uploadOnCloudinary };

@@ -21,6 +21,9 @@ const eventSchema = new Schema(
       default: Date.now(),
       required: true,
     },
+    EventImage: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

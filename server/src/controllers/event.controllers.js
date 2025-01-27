@@ -34,7 +34,7 @@ const CreateEvent = asyncHandler(async (req, res) => {
       EventHeading: eventTitle,
       EventDetails: eventDisc,
       EventDate: eventDate,
-      EventImage: eventImage?.url || "",
+      EventImage: eventImage?.secure_url || "",
     });
 
     const createdEvent = await Event.findById(newEvent._id);
@@ -87,8 +87,38 @@ const diplayEvents = asyncHandler(async (req, res) => {
 });
 
 const updateEvent = asyncHandler(async (req, res) => {
-  const {eventId} = req.params;
-  const {newTitle,newDesc,newDate} = req.body;
+  const { eventId } = req.params;
+  const { newTitle, newDesc, newDate } = req.body;
+  if (
+    [newTitle, newDesc, newDate].some((field) => {
+      return field?.trim() === "";
+    })
+  ) {
+    throw new ApiError(400, "All fields are required");
+  }
+  const event = await Event.findById(eventId);
+  if (!event) {
+    throw new ApiError(404, "Event Not found");
+  }
+
+  const eventImageLocalPath = req.file?.path; // Not req.files for single upload
+  console.log(eventImageLocalPath);
+  let eventImage;
+  try {
+    if (eventImageLocalPath) {
+      eventImage = await uploadOnCloudinary(eventImageLocalPath);
+    }
+    console.log(eventImage);
+  } catch (err) {
+    throw new ApiError(500, { message: "Failed to upload EventImage" });
+  }
+  event.EventHeading = newTitle;
+  event.EventDetails = newDesc;
+  event.EventDate = newDate;
+  if (eventImage.secure_url) {
+    event.EventImage = eventImage?.secure_url;
+  }
+  await event.save({ validateBeforeSave: false });
 });
 
 export { CreateEvent, diplayEvents, updateEvent };

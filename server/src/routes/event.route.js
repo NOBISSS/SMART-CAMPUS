@@ -5,7 +5,7 @@ import { upload } from "../middleware/multer.middlewares.js";
 const router = Router();
 
 router
-  .route("create")
+  .route("/create")
   .post(verifyJWT, upload.single("eventImage"), CreateEvent);
 
 export default router;

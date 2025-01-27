@@ -58,8 +58,31 @@ const CreateEvent = asyncHandler(async (req, res) => {
   }
 });
 
-const diplayEvents = asyncHandler(async (req,res) => {
-  
-})
+const diplayEvents = asyncHandler(async (req, res) => {
+  const events = await Event.aggregate([
+    {
+      $project: {
+        EventHeading: 1,
+        EventDetails: 1,
+        EventDate: 1,
+        EventImage: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      },
+    },
+  ]);
+  if (!events) {
+    throw new ApiError(300, "No events found");
+  }
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        events,
+        `${events.length} Events fetched successfully`
+      )
+    );
+});
 
-export { CreateEvent , diplayEvents };
+export { CreateEvent, diplayEvents };

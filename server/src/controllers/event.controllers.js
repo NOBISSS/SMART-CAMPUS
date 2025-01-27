@@ -58,4 +58,8 @@ const CreateEvent = asyncHandler(async (req, res) => {
   }
 });
 
-export { CreateEvent };
+const diplayEvents = asyncHandler(async (req,res) => {
+  
+})
+
+export { CreateEvent , diplayEvents };

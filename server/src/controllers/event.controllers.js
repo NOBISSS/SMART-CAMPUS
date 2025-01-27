@@ -62,6 +62,7 @@ const diplayEvents = asyncHandler(async (req, res) => {
   const events = await Event.aggregate([
     {
       $project: {
+        _id: 1,
         EventHeading: 1,
         EventDetails: 1,
         EventDate: 1,
@@ -85,4 +86,9 @@ const diplayEvents = asyncHandler(async (req, res) => {
     );
 });
 
-export { CreateEvent, diplayEvents };
+const updateEvent = asyncHandler(async (req, res) => {
+  const {eventId} = req.params;
+  const {newTitle,newDesc,newDate} = req.body;
+});
+
+export { CreateEvent, diplayEvents, updateEvent };

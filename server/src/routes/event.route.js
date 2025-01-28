@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   CreateEvent,
+  deleteEvent,
   diplayEvents,
   updateEvent,
 } from "../controllers/event.controllers.js";
@@ -15,5 +16,5 @@ router.route("/display").get(verifyJWT, diplayEvents);
 router
   .route("/update/:eventId")
   .patch(verifyJWT, upload.single("eventImage"), updateEvent);
-
+router.route("/delete/:eventId").delete(verifyJWT, deleteEvent);
 export default router;

@@ -133,4 +133,14 @@ const updateEvent = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, event, "Event Updated successfully"));
 });
 
-export { CreateEvent, diplayEvents, updateEvent };
+const deleteEvent = asyncHandler(async (req, res) => {
+  const { eventId } = req.params;
+
+  const event = await Event.findByIdAndDelete(eventId);
+  if (!event) throw new ApiError(404, "Event not found");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, event, "Event Deleted Successfully"));
+});
+
+export { CreateEvent, diplayEvents, updateEvent,deleteEvent };

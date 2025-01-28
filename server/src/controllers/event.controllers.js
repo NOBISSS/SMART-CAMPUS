@@ -100,7 +100,9 @@ const updateEvent = asyncHandler(async (req, res) => {
   if (!event) {
     throw new ApiError(404, "Event Not found");
   }
-
+  // if (event.EventImage) { //get logic from vidshare and change it later on.
+  //   await deleteFromCloudinary(event.EventImage)
+  // }
   const eventImageLocalPath = req.file?.path; // Not req.files for single upload
   console.log(eventImageLocalPath);
   let eventImage;
@@ -115,10 +117,14 @@ const updateEvent = asyncHandler(async (req, res) => {
   event.EventHeading = newTitle;
   event.EventDetails = newDesc;
   event.EventDate = newDate;
-  if (eventImage.secure_url) {
+  if (eventImage?.secure_url !== "") {
     event.EventImage = eventImage?.secure_url;
   }
   await event.save({ validateBeforeSave: false });
+  
+  return res
+    .status(200)
+    .json(new ApiResponse(200, event, "Event Updated successfully"));
 });
 
 export { CreateEvent, diplayEvents, updateEvent };

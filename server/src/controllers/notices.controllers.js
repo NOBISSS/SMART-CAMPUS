@@ -58,7 +58,7 @@ const createNotice = asyncHandler(async (req, res) => {
   }
 });
 
-const displayEvents = asyncHandler(async (req, res) => {
+const displayNotices = asyncHandler(async (req, res) => {
   const events = await Event.aggregate([
     {
       $project: {
@@ -85,7 +85,7 @@ const displayEvents = asyncHandler(async (req, res) => {
       )
     );
 });
-const displayEventsStudents = asyncHandler(async (req, res) => {
+const displayNoticesStudents = asyncHandler(async (req, res) => {
   const events = await Event.aggregate([
     {
       $project: {
@@ -113,7 +113,7 @@ const displayEventsStudents = asyncHandler(async (req, res) => {
     );
 });
 
-const updateEvent = asyncHandler(async (req, res) => {
+const updateNotice = asyncHandler(async (req, res) => {
   const { eventId } = req.params;
   const { newTitle, newDesc, newDate } = req.body;
   if (
@@ -160,7 +160,7 @@ const updateEvent = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, event, "Event Updated successfully"));
 });
 
-const deleteEvent = asyncHandler(async (req, res) => {
+const deleteNotice = asyncHandler(async (req, res) => {
   const { eventId } = req.params;
 
   const event = await Event.findByIdAndDelete(eventId);
@@ -172,8 +172,8 @@ const deleteEvent = asyncHandler(async (req, res) => {
 
 export {
   createNotice,
-  deleteEvent,
-  displayEvents,
-  displayEventsStudents,
-  updateEvent,
+  deleteNotice,
+  displayNotices,
+  displayNoticesStudents,
+  updateNotice,
 };

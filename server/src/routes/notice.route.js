@@ -2,8 +2,8 @@ import { Router } from "express";
 import {
   createNotice,
   displayNoticesStudents,
+  displayNotices,
   // deleteNotice,
-  // displayNotices,
   // updateNotice,
 } from "../controllers/notices.controllers.js";
 import verifyJWT from "../middleware/adminAuth.middlewres.js";
@@ -14,7 +14,7 @@ const router = Router();
 router
   .route("/create")
   .post(verifyJWT, upload.single("noticeImage"), createNotice);
-// router.route("/display").get(verifyJWT, displayNotices);
+router.route("/display").get(verifyJWT, displayNotices);
 router.route("/display-students").get(verifyJWTStudent, displayNoticesStudents);
 // router
 //   .route("/update/:NoticeId")

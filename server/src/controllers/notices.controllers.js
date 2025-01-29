@@ -60,7 +60,7 @@ const createNotice = asyncHandler(async (req, res) => {
 });
 
 const displayNotices = asyncHandler(async (req, res) => {
-  const notices = await Event.aggregate([
+  const notices = await Notice.aggregate([
     {
       $project: {
         _id: 1,

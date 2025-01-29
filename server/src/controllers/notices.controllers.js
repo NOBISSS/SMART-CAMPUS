@@ -60,56 +60,62 @@ const createNotice = asyncHandler(async (req, res) => {
 });
 
 const displayNotices = asyncHandler(async (req, res) => {
-  const events = await Event.aggregate([
+  const notices = await Event.aggregate([
     {
       $project: {
         _id: 1,
-        EventHeading: 1,
-        EventDetails: 1,
-        EventDate: 1,
-        EventImage: 1,
+        NoticeHeading: 1,
+        NoticeDetails: 1,
+        semester: 1,
+        NoticeImage: 1,
         createdAt: 1,
         updatedAt: 1,
       },
     },
   ]);
-  if (!events) {
-    throw new ApiError(300, "No events found");
+  if (!notices) {
+    throw new ApiError(300, "No notices found");
   }
   return res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        events,
-        `${events.length} Events fetched successfully`
+        notices,
+        `${notices.length} Events fetched successfully`
       )
     );
 });
 const displayNoticesStudents = asyncHandler(async (req, res) => {
-  const events = await Event.aggregate([
+  const studentSemester = req.user.semester;
+  const notices = await Notice.aggregate([
+    {
+      $match: {
+        semester: studentSemester,
+      },
+    },
     {
       $project: {
         _id: 1,
-        EventHeading: 1,
-        EventDetails: 1,
-        EventDate: 1,
-        EventImage: 1,
+        NoticeHeading: 1,
+        NoticeDetails: 1,
+        semester: 1,
+        NoticeImage: 1,
         createdAt: 1,
         updatedAt: 1,
       },
     },
   ]);
-  if (!events) {
-    throw new ApiError(300, "No events found");
+  if (!notices) {
+    throw new ApiError(300, "No notices found");
   }
   return res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        events,
-        `${events.length} Events fetched successfully`
+        notices,
+        `${notices.length} Events fetched successfully`
       )
     );
 });

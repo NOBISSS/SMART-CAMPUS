@@ -1,3 +1,5 @@
+import _ from "lodash";
+import { Event } from "../models/events.model.js";
 import { Notice } from "../models/notices.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -8,16 +10,15 @@ import {
 } from "../utils/cloudinary.js";
 
 const createNotice = asyncHandler(async (req, res) => {
-  const { noticeTitle, noticeDisc, noticeDate, semester } = req.body;
+  const { noticeTitle, noticeDisc, semester } = req.body;
   if (
-    [noticeTitle, noticeDisc, noticeDate, semester].some((field) => {
+    [noticeTitle, noticeDisc, semester].some((field) => {
       return field?.trim() === "";
     })
   ) {
     throw new ApiError(400, "All fields are required");
   }
-  let noticeImageLocalPath;
-  noticeImageLocalPath = req.file?.path; // Not req.files for single upload
+  const noticeImageLocalPath = req.file?.path; // Not req.files for single upload
 
   console.log(noticeImageLocalPath);
   let noticeImage;
@@ -31,12 +32,12 @@ const createNotice = asyncHandler(async (req, res) => {
   }
   try {
     const newNotice = await Notice.create({
-      noticeHeading: noticeTitle,
-      semester: semester,
-      noticeDetails: noticeDisc,
-      noticeImage: noticeImage?.secure_url || "",
+      NoticeHeading: noticeTitle,
+      semester: _.toNumber(semester),
+      NoticeDetails: noticeDisc,
+      NoticeImage: noticeImage?.secure_url || "",
     });
-
+    console.log(newNotice);
     const createdNotice = await Notice.findById(newNotice._id);
     if (!createdNotice) {
       throw new ApiError(500, {
@@ -51,10 +52,10 @@ const createNotice = asyncHandler(async (req, res) => {
     if (noticeImage) {
       await deleteFromCloudinary(noticeImage.public_id);
     }
-    throw new ApiError(500, {
-      message:
-        "Something went wrong while creating notice and images were deleted",
-    });
+    throw new ApiError(
+      500,
+      "Something went wrong while creating notice and images were deleted"
+    );
   }
 });
 

@@ -9,7 +9,7 @@ import {
   verifyForgetPasswordOTP,
   verifyOTP,
 } from "../controllers/student.controller.js";
-import { verifyJWT } from "../middleware/studentAuth.middlewres.js";
+import  verifyJWT  from "../middleware/studentAuth.middlewres.js";
 const router = Router();
 const upload = multer();
 

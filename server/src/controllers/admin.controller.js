@@ -98,11 +98,13 @@ const loginAdmin = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: "None",
+    path: "/",
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
   };
   return res
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessTokenAdmin", accessToken, options)
+    .cookie("refreshTokenAdmin", refreshToken, options)
     .json(
       new ApiResponse(
         200,

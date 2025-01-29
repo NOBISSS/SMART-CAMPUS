@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import { DB_NAME } from "../constants.js";
-import { Student } from "../models/students.model.js";
+import { Semester } from "../models/semesters.model.js";
 import { hashPassword } from "../utils/hashPassword.util.js";
 dotenv.config({ path: "../.env" });
 mongoose
@@ -285,7 +285,30 @@ const insertData = async () => {
         expiryAt: "01-20-2022",
       },
     ];
-    await Student.insertMany(students);
+
+    const semesters = [
+      {
+        semsterNo: 1,
+      },
+      {
+        semsterNo: 2,
+      },
+      {
+        semsterNo: 3,
+      },
+      {
+        semsterNo: 4,
+      },
+      {
+        semsterNo: 5,
+      },
+      {
+        semsterNo: 6,
+      },
+    ];
+
+    // await Student.insertMany(students);
+    await Semester.insertMany(semesters);
     // await TempOTP.insertMany(otp);
     // await Admin.insertMany(admins);
 

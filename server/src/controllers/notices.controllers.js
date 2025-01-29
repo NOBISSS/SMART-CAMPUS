@@ -1,4 +1,6 @@
+import _ from "lodash";
 import { Event } from "../models/events.model.js";
+import { Notice } from "../models/notices.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -7,58 +9,57 @@ import {
   uploadOnCloudinary,
 } from "../utils/cloudinary.js";
 
-const CreateEvent = asyncHandler(async (req, res) => {
-  const { eventTitle, eventDisc, eventDate } = req.body;
+const createNotice = asyncHandler(async (req, res) => {
+  const { noticeTitle, noticeDisc, semester } = req.body;
   if (
-    [eventTitle, eventDisc, eventDate].some((field) => {
+    [noticeTitle, noticeDisc, semester].some((field) => {
       return field?.trim() === "";
     })
   ) {
     throw new ApiError(400, "All fields are required");
   }
-  let eventImageLocalPath;
-  eventImageLocalPath = req.file?.path; // Not req.files for single upload
+  const noticeImageLocalPath = req.file?.path; // Not req.files for single upload
 
-  console.log(eventImageLocalPath);
-  let eventImage;
+  // console.log(noticeImageLocalPath);
+  let noticeImage;
   try {
-    if (eventImageLocalPath) {
-      eventImage = await uploadOnCloudinary(eventImageLocalPath);
+    if (noticeImageLocalPath) {
+      noticeImage = await uploadOnCloudinary(noticeImageLocalPath);
     }
-    console.log(eventImage);
+    // console.log(noticeImage);
   } catch (err) {
-    throw new ApiError(500, { message: "Failed to upload EventImage" });
+    throw new ApiError(500, { message: "Failed to upload noticeImage" });
   }
   try {
-    const newEvent = await Event.create({
-      EventHeading: eventTitle,
-      EventDetails: eventDisc,
-      EventDate: eventDate,
-      EventImage: eventImage?.secure_url || "",
+    const newNotice = await Notice.create({
+      NoticeHeading: noticeTitle,
+      semester: _.toNumber(semester),
+      NoticeDetails: noticeDisc,
+      NoticeImage: noticeImage?.secure_url || "",
     });
-
-    const createdEvent = await Event.findById(newEvent._id);
-    if (!createdEvent) {
+    // console.log(newNotice);
+    const createdNotice = await Notice.findById(newNotice._id);
+    if (!createdNotice) {
       throw new ApiError(500, {
-        message: "Something went wrong while creating an event",
+        message: "Something went wrong while creating an notice",
       });
     }
 
     return res
       .status(200)
-      .json(new ApiResponse(200, createdEvent, "Event Created Successfully"));
+      .json(new ApiResponse(200, createdNotice, "notice Created Successfully"));
   } catch (err) {
-    if (eventImage) {
-      await deleteFromCloudinary(eventImage.public_id);
+    if (noticeImage) {
+      await deleteFromCloudinary(noticeImage.public_id);
     }
-    throw new ApiError(500, {
-      message:
-        "Something went wrong while creating event and images were deleted",
-    });
+    throw new ApiError(
+      500,
+      "Something went wrong while creating notice and images were deleted"
+    );
   }
 });
 
-const displayEvents = asyncHandler(async (req, res) => {
+const displayNotices = asyncHandler(async (req, res) => {
   const events = await Event.aggregate([
     {
       $project: {
@@ -85,7 +86,7 @@ const displayEvents = asyncHandler(async (req, res) => {
       )
     );
 });
-const displayEventsStudents = asyncHandler(async (req, res) => {
+const displayNoticesStudents = asyncHandler(async (req, res) => {
   const events = await Event.aggregate([
     {
       $project: {
@@ -113,7 +114,7 @@ const displayEventsStudents = asyncHandler(async (req, res) => {
     );
 });
 
-const updateEvent = asyncHandler(async (req, res) => {
+const updateNotice = asyncHandler(async (req, res) => {
   const { eventId } = req.params;
   const { newTitle, newDesc, newDate } = req.body;
   if (
@@ -160,7 +161,7 @@ const updateEvent = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, event, "Event Updated successfully"));
 });
 
-const deleteEvent = asyncHandler(async (req, res) => {
+const deleteNotice = asyncHandler(async (req, res) => {
   const { eventId } = req.params;
 
   const event = await Event.findByIdAndDelete(eventId);
@@ -170,4 +171,10 @@ const deleteEvent = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, event, "Event Deleted Successfully"));
 });
 
-export { CreateEvent, displayEvents, updateEvent,deleteEvent,displayEventsStudents };
+export {
+  createNotice,
+  deleteNotice,
+  displayNotices,
+  displayNoticesStudents,
+  updateNotice,
+};

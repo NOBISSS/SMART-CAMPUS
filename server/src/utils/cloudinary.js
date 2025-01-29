@@ -18,7 +18,7 @@ const uploadOnCloudinary = async (localFilePath) => {
       resource_type: "auto",
       folder: "SmartCampus/Events",
     });
-    console.log("file uploaded on cloudinary" + response.url);
+    // console.log("file uploaded on cloudinary" + response.url);
     //once file is uploaded we would like to delete it from our servers
     fs.unlinkSync(localFilePath);
     return response;
@@ -32,7 +32,7 @@ const uploadOnCloudinary = async (localFilePath) => {
 const deleteFromCloudinary = async (publicId) => {
   try {
     const result = await cloudinary.uploader.destroy(publicId);
-    console.log("Deleted from cloudinary :", publicId);
+    // console.log("Deleted from cloudinary :", publicId);
   } catch (error) {
     console.log("Error deletinğ from cloudinary", error);
     return null;

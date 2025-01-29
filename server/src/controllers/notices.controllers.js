@@ -20,13 +20,13 @@ const createNotice = asyncHandler(async (req, res) => {
   }
   const noticeImageLocalPath = req.file?.path; // Not req.files for single upload
 
-  console.log(noticeImageLocalPath);
+  // console.log(noticeImageLocalPath);
   let noticeImage;
   try {
     if (noticeImageLocalPath) {
       noticeImage = await uploadOnCloudinary(noticeImageLocalPath);
     }
-    console.log(noticeImage);
+    // console.log(noticeImage);
   } catch (err) {
     throw new ApiError(500, { message: "Failed to upload noticeImage" });
   }
@@ -37,7 +37,7 @@ const createNotice = asyncHandler(async (req, res) => {
       NoticeDetails: noticeDisc,
       NoticeImage: noticeImage?.secure_url || "",
     });
-    console.log(newNotice);
+    // console.log(newNotice);
     const createdNotice = await Notice.findById(newNotice._id);
     if (!createdNotice) {
       throw new ApiError(500, {

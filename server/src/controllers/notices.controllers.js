@@ -81,7 +81,7 @@ const displayNotices = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         notices,
-        `${notices.length} Events fetched successfully`
+        `${notices.length} Notices fetched successfully`
       )
     );
 });

@@ -6,6 +6,7 @@ import eventRouter from "./routes/event.route.js";
 import hybridRouter from "./routes/hybrid.route.js";
 import noticeRouter from "./routes/notice.route.js";
 import studentRouter from "./routes/student.route.js";
+import taskRouter from "./routes/task.route.js";
 
 const app = express();
 
@@ -34,4 +35,5 @@ app.use("/api/v1/admin", Adminrouter);
 app.use("/api/v1/auth", hybridRouter);
 app.use("/api/v1/event", eventRouter);
 app.use("/api/v1/notice", noticeRouter);
+app.use("/api/v1/task", taskRouter);
 export { app };

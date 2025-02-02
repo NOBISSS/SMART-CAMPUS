@@ -16,11 +16,9 @@ const tasksSchema = new Schema({
       student: {
         type: String,
         ref: "Student",
-        required: true,
       },
       status: {
         type: Boolean,
-        required: true,
       },
     },
   ],

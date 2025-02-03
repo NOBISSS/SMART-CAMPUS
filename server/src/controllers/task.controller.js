@@ -7,7 +7,7 @@ const createTask = asyncHandler(async (req, res) => {
   const { taskDetails, semester } = req.body;
   if (
     [taskDetails, semester].some((fields) => {
-      return fields.trim() === "";
+      return fields?.trim() === "";
     })
   ) {
     throw new ApiError(400, "All Fields are required");
@@ -30,4 +30,18 @@ const createTask = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, createdTask, "Task created successfully"));
 });
 
-export { createTask };
+const deleteTask = asyncHandler(async (req, res) => {
+  const taskId = req.params.taskId;
+
+  const task = await Tasks.findByIdAndDelete(taskId);
+
+  if (!task) {
+    throw new ApiError(404, "Task not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, task, "Task Deleted Successfully"));
+});
+
+export { createTask, deleteTask };

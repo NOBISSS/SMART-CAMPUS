@@ -96,4 +96,33 @@ const getTasks = asyncHandler(async (req, res) => {
       new ApiResponse(200, tasks, `${tasks.length} Tasks fetched successfully`)
     );
 });
-export { createTask, deleteTask, getTasks, updateTask };
+
+const setStatus = asyncHandler(async (req, res) => {
+  const taskId = req.params.taskId;
+  const task = await Tasks.findById(taskId);
+
+  if (!task) {
+    throw new ApiError(404, "Invalid task choosen");
+  }
+
+  const enrollmentId = req.user.enrollmentId;
+  const findStudent = await Tasks.aggregate([
+    {
+      $match: {},
+    },
+  ]);
+  // const status = task.taskStatus[0].status === true ? false : true;
+  const status =  task.taskStatus.find(enrollmentId);
+  const taskStatusObj = {
+    student: enrollmentId,
+    status: true,
+  };
+  task.taskStatus.push(taskStatusObj);
+  await task.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, taskStatusObj, "Status updated successfully"));
+});
+
+export { createTask, deleteTask, getTasks, setStatus, updateTask };

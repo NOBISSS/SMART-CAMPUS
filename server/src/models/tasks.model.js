@@ -20,6 +20,7 @@ const tasksSchema = new Schema(
         },
         status: {
           type: Boolean,
+          default: false,
         },
       },
     ],

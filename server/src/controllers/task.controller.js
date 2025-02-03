@@ -72,4 +72,28 @@ const updateTask = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, Updatetask, "Task Updatd Successfully"));
 });
 
-export { createTask, deleteTask, updateTask };
+const getTasks = asyncHandler(async (req, res) => {
+  const semester = req.body.semester;
+  const tasks = await Tasks.aggregate([
+    {
+      $match: {
+        semester: 3,
+      },
+    },
+    {
+      $project: {
+        taskDetail: 1,
+        semester: 1,
+      },
+    },
+  ]);
+  if (tasks.length <= 0) {
+    throw new ApiError(400, "No Tasks found");
+  }
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, tasks, `${tasks.length} Tasks fetched successfully`)
+    );
+});
+export { createTask, deleteTask, getTasks, updateTask };

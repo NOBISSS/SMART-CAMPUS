@@ -44,4 +44,32 @@ const deleteTask = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, task, "Task Deleted Successfully"));
 });
 
-export { createTask, deleteTask };
+const updateTask = asyncHandler(async (req, res) => {
+  const taskId = req.params.taskId;
+  const { newTaskDetails, newSemester } = req.body;
+  if (
+    [newTaskDetails, newSemester].some((fields) => {
+      return fields?.trim() === "";
+    })
+  ) {
+    throw new ApiError(400, "All Fields are required");
+  }
+  const Updatetask = await Tasks.findByIdAndUpdate(
+    taskId,
+    {
+      taskDetail: newTaskDetails,
+      semester: _.toNumber(newSemester),
+    },
+    {
+      new: true,
+    }
+  );
+  if (!Updatetask) {
+    throw new ApiError(303, "Task not found");
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, Updatetask, "Task Updatd Successfully"));
+});
+
+export { createTask, deleteTask, updateTask };

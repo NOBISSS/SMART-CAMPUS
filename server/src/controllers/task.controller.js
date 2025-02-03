@@ -72,7 +72,7 @@ const updateTask = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, Updatetask, "Task Updatd Successfully"));
 });
 
-const getTasks = asyncHandler(async (req, res) => {
+const getTasksBySemester = asyncHandler(async (req, res) => {
   const semester = req.body.semester;
   const tasks = await Tasks.aggregate([
     {
@@ -106,23 +106,27 @@ const setStatus = asyncHandler(async (req, res) => {
   }
 
   const enrollmentId = req.user.enrollmentId;
-  const findStudent = await Tasks.aggregate([
-    {
-      $match: {},
-    },
-  ]);
-  // const status = task.taskStatus[0].status === true ? false : true;
-  const status =  task.taskStatus.find(enrollmentId);
-  const taskStatusObj = {
-    student: enrollmentId,
-    status: true,
-  };
-  task.taskStatus.push(taskStatusObj);
+  if (task.taskStatus.length <= 0) {
+    task.taskStatus.push({
+      student: enrollmentId,
+      status: true,
+    });
+  } else {
+    const currentStudent = task.taskStatus.find(
+      (value) => value.student === enrollmentId
+    );
+    const currentStatus = currentStudent.status;
+    const status = currentStatus === false ? true : false;
+    task.taskStatus.push({
+      student: enrollmentId,
+      status: status,
+    });
+  }
   await task.save({ validateBeforeSave: false });
 
   return res
     .status(200)
-    .json(new ApiResponse(200, taskStatusObj, "Status updated successfully"));
+    .json(new ApiResponse(200, task, "Status updated successfully"));
 });
 
-export { createTask, deleteTask, getTasks, setStatus, updateTask };
+export { createTask, deleteTask, getTasksBySemester, setStatus, updateTask };

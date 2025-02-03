@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   createTask,
   deleteTask,
-  getTasks,
+  getTasksBySemester,
   setStatus,
   updateTask,
 } from "../controllers/task.controller.js";
@@ -16,7 +16,7 @@ router.route("/delete/:taskId").delete(verifyJWTAdmin, deleteTask);
 router
   .route("/update/:taskId")
   .patch(verifyJWTAdmin, upload.none(), updateTask);
-router.route("/displaybysemester").get(verifyJWTAdmin, getTasks);
+router.route("/displaybysemester").get(verifyJWTAdmin, getTasksBySemester);
 router.route("/setstatus/:taskId").patch(verifyJWT, upload.none(), setStatus);
 
 export default router;

@@ -117,10 +117,30 @@ const setStatus = asyncHandler(async (req, res) => {
     );
     const currentStatus = currentStudent.status;
     const status = currentStatus === false ? true : false;
-    task.taskStatus.push({
-      student: enrollmentId,
-      status: status,
-    });
+    if (currentStudent.student === "") {
+      task.taskStatus.push({
+        student: enrollmentId,
+        status: status,
+      });
+    } else {
+      const updatedTask = await Tasks.aggregate([
+        {
+          $match: {
+            $and: [
+              {
+                "taskStatus.student": enrollmentId,
+                _id: task._id,
+              },
+            ],
+          },
+        },
+        {
+          $project: {
+            taskStatus: 1,
+          },
+        },
+      ]);
+    }
   }
   await task.save({ validateBeforeSave: false });
 

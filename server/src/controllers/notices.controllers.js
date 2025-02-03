@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { Event } from "../models/events.model.js";
 import { Notice } from "../models/notices.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -60,115 +59,121 @@ const createNotice = asyncHandler(async (req, res) => {
 });
 
 const displayNotices = asyncHandler(async (req, res) => {
-  const events = await Event.aggregate([
+  const notices = await Notice.aggregate([
     {
       $project: {
         _id: 1,
-        EventHeading: 1,
-        EventDetails: 1,
-        EventDate: 1,
-        EventImage: 1,
+        NoticeHeading: 1,
+        NoticeDetails: 1,
+        semester: 1,
+        NoticeImage: 1,
         createdAt: 1,
         updatedAt: 1,
       },
     },
   ]);
-  if (!events) {
-    throw new ApiError(300, "No events found");
+  if (!notices) {
+    throw new ApiError(300, "No notices found");
   }
   return res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        events,
-        `${events.length} Events fetched successfully`
+        notices,
+        `${notices.length} Notices fetched successfully`
       )
     );
 });
 const displayNoticesStudents = asyncHandler(async (req, res) => {
-  const events = await Event.aggregate([
+  const studentSemester = req.user.semester;
+  const notices = await Notice.aggregate([
+    {
+      $match: {
+        semester: studentSemester,
+      },
+    },
     {
       $project: {
         _id: 1,
-        EventHeading: 1,
-        EventDetails: 1,
-        EventDate: 1,
-        EventImage: 1,
+        NoticeHeading: 1,
+        NoticeDetails: 1,
+        semester: 1,
+        NoticeImage: 1,
         createdAt: 1,
         updatedAt: 1,
       },
     },
   ]);
-  if (!events) {
-    throw new ApiError(300, "No events found");
+  if (!notices) {
+    throw new ApiError(300, "No notices found");
   }
   return res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        events,
-        `${events.length} Events fetched successfully`
+        notices,
+        `${notices.length} Events fetched successfully`
       )
     );
 });
 
 const updateNotice = asyncHandler(async (req, res) => {
-  const { eventId } = req.params;
-  const { newTitle, newDesc, newDate } = req.body;
+  const { noticeId } = req.params;
+  const { newTitle, newDesc, semester } = req.body;
   if (
-    [newTitle, newDesc, newDate].some((field) => {
+    [newTitle, newDesc, semester].some((field) => {
       return field?.trim() === "";
     })
   ) {
     throw new ApiError(400, "All fields are required");
   }
-  // const event = await Event.findById(eventId);
-  const eventImageLocalPath = req.file?.path; // Not req.files for single upload
-  console.log(eventImageLocalPath);
-  let eventImage;
+  // const notice = await notice.findById(noticeId);
+  const noticeImageLocalPath = req.file?.path; // Not req.files for single upload
+  console.log(noticeImageLocalPath);
+  let noticeImage;
   try {
-    if (eventImageLocalPath) {
-      eventImage = await uploadOnCloudinary(eventImageLocalPath);
+    if (noticeImageLocalPath) {
+      noticeImage = await uploadOnCloudinary(noticeImageLocalPath);
     }
-    console.log(eventImage);
+    console.log(noticeImage);
   } catch (err) {
-    throw new ApiError(500, { message: "Failed to upload EventImage" });
+    throw new ApiError(500, { message: "Failed to upload noticeImage" });
   }
-  const event = await Event.findByIdAndUpdate(
-    eventId,
+  const notice = await Notice.findByIdAndUpdate(
+    noticeId,
     {
       $set: {
-        EventHeading: newTitle,
-        EventDetails: newDesc,
-        EventDate: newDate,
-        EventImage: eventImage?.secure_url,
+        NoticeHeading: newTitle,
+        NoticeDetails: newDesc,
+        semester: _.toNumber(semester),
+        NoticeImage: noticeImage?.secure_url,
       },
     },
     { new: true }
   );
-  if (!event) {
-    throw new ApiError(404, "Event Not found");
+  if (!notice) {
+    throw new ApiError(404, "notice Not found");
   }
-  // if (event.EventImage) { //get logic from vidshare and change it later on.
-  //   await deleteFromCloudinary(event.EventImage)
+  // if (notice.noticeImage) { //get logic from vidshare and change it later on.
+  //   await deleteFromCloudinary(notice.noticeImage)
   // }
-  await event.save({ validateBeforeSave: false });
+  await notice.save({ validateBeforeSave: false });
 
   return res
     .status(200)
-    .json(new ApiResponse(200, event, "Event Updated successfully"));
+    .json(new ApiResponse(200, notice, "notice Updated successfully"));
 });
 
 const deleteNotice = asyncHandler(async (req, res) => {
-  const { eventId } = req.params;
+  const { noticeId } = req.params;
 
-  const event = await Event.findByIdAndDelete(eventId);
-  if (!event) throw new ApiError(404, "Event not found");
+  const notice = await Notice.findByIdAndDelete(noticeId);
+  if (!notice) throw new ApiError(404, "notice not found");
   return res
     .status(200)
-    .json(new ApiResponse(200, event, "Event Deleted Successfully"));
+    .json(new ApiResponse(200, notice, "notice Deleted Successfully"));
 });
 
 export {

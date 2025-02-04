@@ -143,13 +143,9 @@ const setStatus = asyncHandler(async (req, res) => {
           },
         },
       ]);
-      // console.log(updatedTask[0].taskStatus);
       const currentIndex = taskStatusArr[0].taskStatus.findIndex(
         (value) => value.student === currentStudent.student
       );
-      // console.log(currentIndex);
-      // console.log(updatedTask[0].taskStatus[currentIndex]);
-      // updatedTask[0].taskStatus[currentIndex].status = status
       task.taskStatus[currentIndex].status = status;
     }
   }

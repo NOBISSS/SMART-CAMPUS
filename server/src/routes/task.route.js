@@ -17,6 +17,7 @@ router
   .route("/update/:taskId")
   .patch(verifyJWTAdmin, upload.none(), updateTask);
 router.route("/displaybysemester").get(verifyJWTAdmin, getTasksBySemester);
+router.route("/displaybysemesterstudent").get(verifyJWT, getTasksBySemester);
 router.route("/setstatus/:taskId").patch(verifyJWT, upload.none(), setStatus);
 
 export default router;

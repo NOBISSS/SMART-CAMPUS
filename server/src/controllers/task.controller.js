@@ -72,4 +72,81 @@ const updateTask = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, Updatetask, "Task Updatd Successfully"));
 });
 
-export { createTask, deleteTask, updateTask };
+const getTasksBySemester = asyncHandler(async (req, res) => {
+  const semester = req.body.semester;
+  const tasks = await Tasks.aggregate([
+    {
+      $match: {
+        semester: 3,
+      },
+    },
+    {
+      $project: {
+        taskDetail: 1,
+        semester: 1,
+      },
+    },
+  ]);
+  if (tasks.length <= 0) {
+    throw new ApiError(400, "No Tasks found");
+  }
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, tasks, `${tasks.length} Tasks fetched successfully`)
+    );
+});
+
+const setStatus = asyncHandler(async (req, res) => {
+  const taskId = req.params.taskId;
+  const task = await Tasks.findById(taskId);
+
+  if (!task) {
+    throw new ApiError(404, "Invalid task choosen");
+  }
+
+  const enrollmentId = req.user.enrollmentId;
+  if (task.taskStatus.length <= 0) {
+    task.taskStatus.push({
+      student: enrollmentId,
+      status: true,
+    });
+  } else {
+    const currentStudent = task.taskStatus.find(
+      (value) => value.student === enrollmentId
+    );
+    const currentStatus = currentStudent.status;
+    const status = currentStatus === false ? true : false;
+    if (currentStudent.student === "") {
+      task.taskStatus.push({
+        student: enrollmentId,
+        status: status,
+      });
+    } else {
+      const updatedTask = await Tasks.aggregate([
+        {
+          $match: {
+            $and: [
+              {
+                "taskStatus.student": enrollmentId,
+                _id: task._id,
+              },
+            ],
+          },
+        },
+        {
+          $project: {
+            taskStatus: 1,
+          },
+        },
+      ]);
+    }
+  }
+  await task.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, task, "Status updated successfully"));
+});
+
+export { createTask, deleteTask, getTasksBySemester, setStatus, updateTask };

@@ -14,7 +14,7 @@ const CreateEvent = asyncHandler(async (req, res) => {
       return field?.trim() === "";
     })
   ) {
-    throw new ApiError(400, "All fields are required");
+    throw new ApiError(400, { message: "All fields are required" });
   }
   let eventImageLocalPath;
   eventImageLocalPath = req.file?.path; // Not req.files for single upload
@@ -73,7 +73,7 @@ const displayEvents = asyncHandler(async (req, res) => {
     },
   ]);
   if (!events) {
-    throw new ApiError(300, "No events found");
+    throw new ApiError(300, { message: "No events found" });
   }
   return res
     .status(200)
@@ -100,7 +100,7 @@ const displayEventsStudents = asyncHandler(async (req, res) => {
     },
   ]);
   if (!events) {
-    throw new ApiError(300, "No events found");
+    throw new ApiError(300, { message: "No events found" });
   }
   return res
     .status(200)
@@ -121,7 +121,7 @@ const updateEvent = asyncHandler(async (req, res) => {
       return field?.trim() === "";
     })
   ) {
-    throw new ApiError(400, "All fields are required");
+    throw new ApiError(400, { message: "All fields are required" });
   }
   // const event = await Event.findById(eventId);
   const eventImageLocalPath = req.file?.path; // Not req.files for single upload
@@ -148,7 +148,7 @@ const updateEvent = asyncHandler(async (req, res) => {
     { new: true }
   );
   if (!event) {
-    throw new ApiError(404, "Event Not found");
+    throw new ApiError(404, { message: "Event Not found" });
   }
   // if (event.EventImage) { //get logic from vidshare and change it later on.
   //   await deleteFromCloudinary(event.EventImage)
@@ -164,10 +164,16 @@ const deleteEvent = asyncHandler(async (req, res) => {
   const { eventId } = req.params;
 
   const event = await Event.findByIdAndDelete(eventId);
-  if (!event) throw new ApiError(404, "Event not found");
+  if (!event) throw new ApiError(404, { message: "Event not found" });
   return res
     .status(200)
     .json(new ApiResponse(200, event, "Event Deleted Successfully"));
 });
 
-export { CreateEvent, displayEvents, updateEvent,deleteEvent,displayEventsStudents };
+export {
+  CreateEvent,
+  deleteEvent,
+  displayEvents,
+  displayEventsStudents,
+  updateEvent,
+};

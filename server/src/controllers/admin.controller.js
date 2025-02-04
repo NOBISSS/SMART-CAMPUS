@@ -11,7 +11,7 @@ const generateAccessAndRefreshToken = async (adminId) => {
   try {
     const admin = await Admin.findById(adminId);
     if (!admin) {
-      throw new ApiError(404, "Admin not found");
+      throw new ApiError(404, {message:"Admin not found"});
     }
     const accessToken = await admin.generateAccessToken();
     const refreshToken = await admin.generateRefreshToken();
@@ -22,7 +22,7 @@ const generateAccessAndRefreshToken = async (adminId) => {
   } catch (error) {
     throw new ApiError(
       500,
-      "Somthing went wrong while generating access and refresh tokens"
+      {message:"Somthing went wrong while generating access and refresh tokens"}
     );
   }
 };
@@ -34,14 +34,14 @@ const verifyOTP = asyncHandler(async (req, res) => {
       return field?.trim() === "";
     })
   ) {
-    throw new ApiError(400, "All fields are required");
+    throw new ApiError(400, {message:"All fields are required"});
   }
   const Gotp = _.toNumber(otp);
   const otpData = await TempOTP.findOne({
     $and: [{ Gotp: Gotp, isForget: true }],
   });
   if (!otpData) {
-    throw new ApiError(404, "Enter a valid OTP");
+    throw new ApiError(404, {message:"Enter a valid OTP"});
   }
   const enrollId = otpData.adminId;
   const expiryDate = otpData.expiryAt;
@@ -54,7 +54,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
   if (isExpired || Date.now() > expiryDate) {
     otpData.isExpired = true;
     await TempOTP.deleteOne({ Gotp: Gotp });
-    throw new ApiError(404, "OTP is expired, Generate new OTP");
+    throw new ApiError(404, {message:"OTP is expired, Generate new OTP"});
   }
   if (otpData.Gotp === Gotp) {
     admin.$set({ password: password });
@@ -64,7 +64,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, { admin }, "Password changed successfully"));
   } else {
-    throw new ApiError(404, "Wrong OTP");
+    throw new ApiError(404, {message:"Wrong OTP"});
   }
 });
 
@@ -75,15 +75,15 @@ const loginAdmin = asyncHandler(async (req, res) => {
       return field?.trim() === "";
     })
   ) {
-    throw new ApiError(400, "All fields are required");
+    throw new ApiError(400, { message: "All fields are required" });
   }
   let admin = await checkInput(input, "admin");
   if (!admin) {
-    throw new ApiError(404, "Admin not found");
+    throw new ApiError(404, { message: "Admin not found" });
   }
   const isPasswordValid = await admin.isPasswordCorrect(password);
   if (!isPasswordValid) {
-    throw new ApiError(404, "Invalid Password");
+    throw new ApiError(404, { message: "Invalid Password" });
   }
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
     admin._id
@@ -92,7 +92,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
     "-password -refreshToken"
   );
   if (!loggedInAdmin) {
-    throw new ApiError(500, "Something went wrong from our side");
+    throw new ApiError(500, { message: "Something went wrong from our side" });
   }
   const options = {
     httpOnly: true,
@@ -121,11 +121,11 @@ const forgetPassword = asyncHandler(async (req, res) => {
       return field?.trim() === "";
     })
   ) {
-    throw new ApiError(400, "All fields are required");
+    throw new ApiError(400, { message: "All fields are required" });
   }
   const admin = await checkInput(input, "admin");
   if (newPassword !== confirmNewPassword) {
-    throw new ApiError(404, "Given password didn't match");
+    throw new ApiError(404, { message: "Given password didn't match" });
   }
   const Gotp = await sendMail(admin.emailId);
   const adminId = admin.adminId;

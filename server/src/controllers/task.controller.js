@@ -111,19 +111,20 @@ const setStatus = asyncHandler(async (req, res) => {
       student: enrollmentId,
       status: true,
     });
-  } else {
+  } else if (task.taskStatus.length > 0) {
     const currentStudent = task.taskStatus.find(
       (value) => value.student === enrollmentId
     );
-    const currentStatus = currentStudent.status;
-    const status = currentStatus === false ? true : false;
-    if (currentStudent.student === "") {
+    if (!currentStudent) {
       task.taskStatus.push({
         student: enrollmentId,
-        status: status,
+        status: true,
       });
     } else {
-      const updatedTask = await Tasks.aggregate([
+      const currentStatus = currentStudent.status;
+      const status = currentStatus === false ? true : false;
+      // console.log(currentStudent);
+      const taskStatusArr = await Tasks.aggregate([
         {
           $match: {
             $and: [
@@ -136,10 +137,20 @@ const setStatus = asyncHandler(async (req, res) => {
         },
         {
           $project: {
-            taskStatus: 1,
+            "taskStatus.student": 1,
+            "taskStatus.status": 1,
+            "taskStatus._id": 1,
           },
         },
       ]);
+      // console.log(updatedTask[0].taskStatus);
+      const currentIndex = taskStatusArr[0].taskStatus.findIndex(
+        (value) => value.student === currentStudent.student
+      );
+      // console.log(currentIndex);
+      // console.log(updatedTask[0].taskStatus[currentIndex]);
+      // updatedTask[0].taskStatus[currentIndex].status = status
+      task.taskStatus[currentIndex].status = status;
     }
   }
   await task.save({ validateBeforeSave: false });

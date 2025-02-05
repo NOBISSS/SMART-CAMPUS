@@ -11,7 +11,7 @@ const generateAccessAndRefreshToken = async (adminId) => {
   try {
     const admin = await Admin.findById(adminId);
     if (!admin) {
-      throw new ApiError(404, {message:"Admin not found"});
+      throw new ApiError(404, { message: "Admin not found" });
     }
     const accessToken = await admin.generateAccessToken();
     const refreshToken = await admin.generateRefreshToken();
@@ -20,10 +20,9 @@ const generateAccessAndRefreshToken = async (adminId) => {
     await admin.save({ validateBeforeSave: false });
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(
-      500,
-      {message:"Somthing went wrong while generating access and refresh tokens"}
-    );
+    throw new ApiError(500, {
+      message: "Somthing went wrong while generating access and refresh tokens",
+    });
   }
 };
 
@@ -34,14 +33,14 @@ const verifyOTP = asyncHandler(async (req, res) => {
       return field?.trim() === "";
     })
   ) {
-    throw new ApiError(400, {message:"All fields are required"});
+    throw new ApiError(400, { message: "All fields are required" });
   }
   const Gotp = _.toNumber(otp);
   const otpData = await TempOTP.findOne({
     $and: [{ Gotp: Gotp, isForget: true }],
   });
   if (!otpData) {
-    throw new ApiError(404, {message:"Enter a valid OTP"});
+    throw new ApiError(404, { message: "Enter a valid OTP" });
   }
   const enrollId = otpData.adminId;
   const expiryDate = otpData.expiryAt;
@@ -54,7 +53,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
   if (isExpired || Date.now() > expiryDate) {
     otpData.isExpired = true;
     await TempOTP.deleteOne({ Gotp: Gotp });
-    throw new ApiError(404, {message:"OTP is expired, Generate new OTP"});
+    throw new ApiError(404, { message: "OTP is expired, Generate new OTP" });
   }
   if (otpData.Gotp === Gotp) {
     admin.$set({ password: password });
@@ -64,7 +63,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, { admin }, "Password changed successfully"));
   } else {
-    throw new ApiError(404, {message:"Wrong OTP"});
+    throw new ApiError(404, { message: "Wrong OTP" });
   }
 });
 
@@ -151,4 +150,22 @@ const getAdmin = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, req?.user, "Admin Data Fetched Sucessfully"));
 });
 
-export { forgetPassword, getAdmin, loginAdmin, verifyOTP };
+const updatePassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword, confirmNewPassword } = req.body;
+  const admin = await Admin.findById(req.user?._id);
+  const isPasswordValid = await admin.isPasswordCorrect(oldPassword);
+  if (!isPasswordValid) {
+    throw new ApiError(404, { message: "Old password is invalid" });
+  }
+  if (newPassword !== confirmNewPassword) {
+    throw new ApiError(404, { message: "Given password didn't match" });
+  }
+  admin.$set({ password: newPassword });
+  await admin.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password changed successfully"));
+});
+
+export { forgetPassword, getAdmin, loginAdmin, verifyOTP,updatePassword };

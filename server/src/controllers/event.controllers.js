@@ -59,58 +59,66 @@ const CreateEvent = asyncHandler(async (req, res) => {
 });
 
 const displayEvents = asyncHandler(async (req, res) => {
-  const events = await Event.aggregate([
-    {
-      $project: {
-        _id: 1,
-        EventHeading: 1,
-        EventDetails: 1,
-        EventDate: 1,
-        EventImage: 1,
-        createdAt: 1,
-        updatedAt: 1,
+  try {
+    const events = await Event.aggregate([
+      {
+        $project: {
+          _id: 1,
+          EventHeading: 1,
+          EventDetails: 1,
+          EventDate: 1,
+          EventImage: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
       },
-    },
-  ]);
-  if (!events) {
-    throw new ApiError(300, { message: "No events found" });
+    ]);
+    if (!events) {
+      throw new ApiError(300, { message: "No events found" });
+    }
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          events,
+          `${events.length} Events fetched successfully`
+        )
+      );
+  } catch (err) {
+    throw new ApiError(500, { message: "Something went wrong from our side" });
   }
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        events,
-        `${events.length} Events fetched successfully`
-      )
-    );
 });
 const displayEventsStudents = asyncHandler(async (req, res) => {
-  const events = await Event.aggregate([
-    {
-      $project: {
-        _id: 1,
-        EventHeading: 1,
-        EventDetails: 1,
-        EventDate: 1,
-        EventImage: 1,
-        createdAt: 1,
-        updatedAt: 1,
+  try {
+    const events = await Event.aggregate([
+      {
+        $project: {
+          _id: 1,
+          EventHeading: 1,
+          EventDetails: 1,
+          EventDate: 1,
+          EventImage: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
       },
-    },
-  ]);
-  if (!events) {
-    throw new ApiError(300, { message: "No events found" });
+    ]);
+    if (!events) {
+      throw new ApiError(300, { message: "No events found" });
+    }
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          events,
+          `${events.length} Events fetched successfully`
+        )
+      );
+  } catch (err) {
+    throw new ApiError(500, { message: "Something went wrong from our side" });
   }
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        events,
-        `${events.length} Events fetched successfully`
-      )
-    );
 });
 
 const updateEvent = asyncHandler(async (req, res) => {
@@ -135,39 +143,47 @@ const updateEvent = asyncHandler(async (req, res) => {
   } catch (err) {
     throw new ApiError(500, { message: "Failed to upload EventImage" });
   }
-  const event = await Event.findByIdAndUpdate(
-    eventId,
-    {
-      $set: {
-        EventHeading: newTitle,
-        EventDetails: newDesc,
-        EventDate: newDate,
-        EventImage: eventImage?.secure_url,
+  try {
+    const event = await Event.findByIdAndUpdate(
+      eventId,
+      {
+        $set: {
+          EventHeading: newTitle,
+          EventDetails: newDesc,
+          EventDate: newDate,
+          EventImage: eventImage?.secure_url,
+        },
       },
-    },
-    { new: true }
-  );
-  if (!event) {
-    throw new ApiError(404, { message: "Event Not found" });
+      { new: true }
+    );
+    if (!event) {
+      throw new ApiError(404, { message: "Event Not found" });
+    }
+    // if (event.EventImage) { //get logic from vidshare and change it later on.
+    //   await deleteFromCloudinary(event.EventImage)
+    // }
+    await event.save({ validateBeforeSave: false });
+  
+    return res
+      .status(200)
+      .json(new ApiResponse(200, event, "Event Updated successfully"));
+  } catch (err) {
+    throw new ApiError(500, { message: "Something went wrong from our side" });
   }
-  // if (event.EventImage) { //get logic from vidshare and change it later on.
-  //   await deleteFromCloudinary(event.EventImage)
-  // }
-  await event.save({ validateBeforeSave: false });
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, event, "Event Updated successfully"));
 });
 
 const deleteEvent = asyncHandler(async (req, res) => {
   const { eventId } = req.params;
 
-  const event = await Event.findByIdAndDelete(eventId);
-  if (!event) throw new ApiError(404, { message: "Event not found" });
-  return res
-    .status(200)
-    .json(new ApiResponse(200, event, "Event Deleted Successfully"));
+  try {
+    const event = await Event.findByIdAndDelete(eventId);
+    if (!event) throw new ApiError(404, { message: "Event not found" });
+    return res
+      .status(200)
+      .json(new ApiResponse(200, event, "Event Deleted Successfully"));
+  } catch (err) {
+    throw new ApiError(500, { message: "Something went wrong from our side" });
+  }
 });
 
 export {
@@ -175,5 +191,6 @@ export {
   deleteEvent,
   displayEvents,
   displayEventsStudents,
-  updateEvent,
+  updateEvent
 };
+

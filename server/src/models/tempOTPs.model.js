@@ -6,7 +6,7 @@ const OTPs = new Schema(
       type: Number,
       required: true,
     },
-    userId: {
+  userId: {
       type: String,
       ref: "Student",
       required: true,

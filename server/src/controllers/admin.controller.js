@@ -43,11 +43,11 @@ const verifyOTP = asyncHandler(async (req, res) => {
     if (!otpData) {
       throw new ApiError(404, { message: "Enter a valid OTP" });
     }
-    const enrollId = otpData.adminId;
+    const enrollId = otpData.userId;
     const expiryDate = otpData.expiryAt;
     const isExpired = otpData.isExpired;
     const password = otpData.password;
-    const admin = await Admin.findOne({ enrollmentId: enrollId });
+    const admin = await Admin.findOne({ adminId: enrollId });
     if (!admin) {
       throw new ApiError(400, { message: "admin not found" });
     }
@@ -67,7 +67,9 @@ const verifyOTP = asyncHandler(async (req, res) => {
       throw new ApiError(404, { message: "Wrong OTP" });
     }
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -119,7 +121,9 @@ const loginAdmin = asyncHandler(async (req, res) => {
         )
       );
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -144,7 +148,7 @@ const forgetPassword = asyncHandler(async (req, res) => {
     const password = newPassword;
     const tempOTP = await TempOTP.create({
       Gotp,
-      adminId,
+      userId: adminId,
       expiryAt,
       password,
       isForget: true,
@@ -154,7 +158,9 @@ const forgetPassword = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, { admin, Gotp }, "OTP Generated sucessfully"));
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -182,7 +188,9 @@ const updatePassword = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, {}, "Password changed successfully"));
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 

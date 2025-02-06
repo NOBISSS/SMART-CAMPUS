@@ -201,7 +201,9 @@ const updatePassword = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, {}, "Password changed successfully"));
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -241,7 +243,9 @@ const forgetPassword = asyncHandler(async (req, res) => {
         new ApiResponse(200, { student, Gotp }, "OTP Generated sucessfully")
       );
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -288,7 +292,9 @@ const verifyForgetPasswordOTP = asyncHandler(async (req, res) => {
       throw new ApiError(404, { message: "Wrong OTP" });
     }
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 

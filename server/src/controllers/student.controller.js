@@ -231,7 +231,7 @@ const forgetPassword = asyncHandler(async (req, res) => {
     const password = newPassword;
     const tempOTP = await TempOTP.create({
       Gotp,
-      enrollmentId,
+      userId: enrollmentId,
       expiryAt,
       password,
       isForget: true,
@@ -266,7 +266,7 @@ const verifyForgetPasswordOTP = asyncHandler(async (req, res) => {
     if (!otpData) {
       throw new ApiError(404, { message: "Enter a valid OTP" });
     }
-    const enrollId = otpData.enrollmentId;
+    const enrollId = otpData.userId;
     const expiryDate = otpData.expiryAt;
     const isExpired = otpData.isExpired;
     const password = otpData.password;

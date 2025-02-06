@@ -49,63 +49,67 @@ const hybridLogin = asyncHandler(async (req, res) => {
   };
 
   // Common login logic for both students and admins
-  const loginUser = async (user, role) => {
-    const isPasswordValid = await user.isPasswordCorrect(password);
-    if (!isPasswordValid) {
-      throw new ApiError(404, "Invalid Password");
-    }
+  try {
+    const loginUser = async (user, role) => {
+      const isPasswordValid = await user.isPasswordCorrect(password);
+      if (!isPasswordValid) {
+        throw new ApiError(404, "Invalid Password");
+      }
 
-    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-      user._id,
-      role
-    );
-    if (!accessToken || !refreshToken) {
-      throw new ApiError(404, "The tokens are not generated");
-    }
-    const loggedInUser =
-      role === "student"
-        ? await Student.findById(user._id).select("-password -refreshToken")
-        : await Admin.findById(user._id).select("-password -refreshToken");
-
-    if (!loggedInUser) {
-      throw new ApiError(500, "Something went wrong from our side");
-    }
-
-    return res
-      .status(200)
-      .cookie(
-        `accessToken${role === "admin" ? "Admin" : ""}`,
-        accessToken,
-        options
-      )
-      .cookie(
-        `refreshToken${role === "admin" ? "Admin" : ""}`,
-        refreshToken,
-        options
-      )
-      .json(
-        new ApiResponse(
-          200,
-          { [role]: loggedInUser, role },
-          `${role.charAt(0).toUpperCase() + role.slice(1)} logged in successfully`
-        )
+      const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+        user._id,
+        role
       );
-  };
+      if (!accessToken || !refreshToken) {
+        throw new ApiError(404, "The tokens are not generated");
+      }
+      const loggedInUser =
+        role === "student"
+          ? await Student.findById(user._id).select("-password -refreshToken")
+          : await Admin.findById(user._id).select("-password -refreshToken");
 
-  if (role === "student") {
-    let student = await checkInput(input, role);
-    if (!student.isRegistered) {
-      throw new ApiError(404, "Student has not registered");
+      if (!loggedInUser) {
+        throw new ApiError(500, "Something went wrong from our side");
+      }
+
+      return res
+        .status(200)
+        .cookie(
+          `accessToken${role === "admin" ? "Admin" : ""}`,
+          accessToken,
+          options
+        )
+        .cookie(
+          `refreshToken${role === "admin" ? "Admin" : ""}`,
+          refreshToken,
+          options
+        )
+        .json(
+          new ApiResponse(
+            200,
+            { [role]: loggedInUser, role },
+            `${role.charAt(0).toUpperCase() + role.slice(1)} logged in successfully`
+          )
+        );
+    };
+
+    if (role === "student") {
+      let student = await checkInput(input, role);
+      if (!student.isRegistered) {
+        throw new ApiError(404, "Student has not registered");
+      }
+      return await loginUser(student, role);
+    } else if (role === "admin") {
+      let admin = await checkInput(input, role);
+      if (!admin) {
+        throw new ApiError(404, "Admin not found");
+      }
+      return await loginUser(admin, role);
+    } else {
+      return res.status(400).json({ message: "Invalid role selected." });
     }
-    return await loginUser(student, role);
-  } else if (role === "admin") {
-    let admin = await checkInput(input, role);
-    if (!admin) {
-      throw new ApiError(404, "Admin not found");
-    }
-    return await loginUser(admin, role);
-  } else {
-    return res.status(400).json({ message: "Invalid role selected." });
+  } catch (err) {
+    throw new ApiError(500, { message: "Something went wrong from our side" });
   }
 });
 
@@ -118,27 +122,31 @@ const hybridForgetPassword = asyncHandler(async (req, res) => {
   ) {
     throw new ApiError(400, "All fields are required");
   }
-  const user = await checkInput(input, role);
-  if (newPassword !== confirmNewPassword) {
-    throw new ApiError(404, "Given password didn't match");
+  try {
+    const user = await checkInput(input, role);
+    if (newPassword !== confirmNewPassword) {
+      throw new ApiError(404, "Given password didn't match");
+    }
+    const Gotp = await sendMail(user.emailId);
+    const userId = role === "student" ? user.enrollmentId : user.adminId;
+    const expiryAt = new Date();
+    expiryAt.setMinutes(expiryAt.getMinutes() + 10);
+    const password = newPassword;
+    const tempOTP = await TempOTP.create({
+      Gotp,
+      userId,
+      expiryAt,
+      password,
+      role,
+      isForget: true,
+    });
+    await tempOTP.save({ validateBeforeSave: false });
+    return res
+      .status(200)
+      .json(new ApiResponse(200, { user, Gotp }, "OTP Generated sucessfully"));
+  } catch (err) {
+    throw new ApiError(500, { message: "Something went wrong from our side" });
   }
-  const Gotp = await sendMail(user.emailId);
-  const userId = role === "student" ? user.enrollmentId : user.adminId;
-  const expiryAt = new Date();
-  expiryAt.setMinutes(expiryAt.getMinutes() + 10);
-  const password = newPassword;
-  const tempOTP = await TempOTP.create({
-    Gotp,
-    userId,
-    expiryAt,
-    password,
-    role,
-    isForget: true,
-  });
-  await tempOTP.save({ validateBeforeSave: false });
-  return res
-    .status(200)
-    .json(new ApiResponse(200, { user, Gotp }, "OTP Generated sucessfully"));
 });
 
 const verifyHybridOTP = asyncHandler(async (req, res) => {
@@ -151,41 +159,45 @@ const verifyHybridOTP = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
   const Gotp = _.toNumber(otp);
-  const otpData = await TempOTP.findOne({
-    $and: [{ Gotp: Gotp, isForget: true }],
-  });
-  if (!otpData) {
-    throw new ApiError(404, "Enter a valid OTP");
-  }
-  const userId = otpData.userId;
-  const expiryDate = otpData.expiryAt;
-  const isExpired = otpData.isExpired;
-  const password = otpData.password;
-  const role = otpData.role;
-  const user =
-    role === "admin"
-      ? await Admin.findOne({ adminId: userId })
-      : await Student.findOne({ enrollmentId: userId });
-  if (!user) {
-    throw new ApiError(400, { message: "user not found" });
-  }
-  if (role === "student" && !user.isRegistered) {
-    throw new ApiError(404, "Student has not registered yet");
-  }
-  if (isExpired || Date.now() > expiryDate) {
-    otpData.isExpired = true;
-    await TempOTP.deleteOne({ Gotp: Gotp });
-    throw new ApiError(404, "OTP is expired, Generate new OTP");
-  }
-  if (otpData.Gotp === Gotp) {
-    user.$set({ password: password });
-    await user.save({ validateBeforeSave: false });
-    await TempOTP.deleteOne({ Gotp: Gotp });
-    return res
-      .status(200)
-      .json(new ApiResponse(200, { user }, "Password changed successfully"));
-  } else {
-    throw new ApiError(404, "Wrong OTP");
+  try {
+    const otpData = await TempOTP.findOne({
+      $and: [{ Gotp: Gotp, isForget: true }],
+    });
+    if (!otpData) {
+      throw new ApiError(404, "Enter a valid OTP");
+    }
+    const userId = otpData.userId;
+    const expiryDate = otpData.expiryAt;
+    const isExpired = otpData.isExpired;
+    const password = otpData.password;
+    const role = otpData.role;
+    const user =
+      role === "admin"
+        ? await Admin.findOne({ adminId: userId })
+        : await Student.findOne({ enrollmentId: userId });
+    if (!user) {
+      throw new ApiError(400, { message: "user not found" });
+    }
+    if (role === "student" && !user.isRegistered) {
+      throw new ApiError(404, "Student has not registered yet");
+    }
+    if (isExpired || Date.now() > expiryDate) {
+      otpData.isExpired = true;
+      await TempOTP.deleteOne({ Gotp: Gotp });
+      throw new ApiError(404, "OTP is expired, Generate new OTP");
+    }
+    if (otpData.Gotp === Gotp) {
+      user.$set({ password: password });
+      await user.save({ validateBeforeSave: false });
+      await TempOTP.deleteOne({ Gotp: Gotp });
+      return res
+        .status(200)
+        .json(new ApiResponse(200, { user }, "Password changed successfully"));
+    } else {
+      throw new ApiError(404, "Wrong OTP");
+    }
+  } catch (err) {
+    throw new ApiError(500, { message: "Something went wrong from our side" });
   }
 });
 

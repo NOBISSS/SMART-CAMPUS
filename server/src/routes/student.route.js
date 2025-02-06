@@ -9,7 +9,7 @@ import {
   verifyForgetPasswordOTP,
   verifyOTP,
 } from "../controllers/student.controller.js";
-import  verifyJWT  from "../middleware/studentAuth.middlewres.js";
+import verifyJWT from "../middleware/studentAuth.middlewres.js";
 const router = Router();
 const upload = multer();
 
@@ -23,7 +23,7 @@ router
   .post(upload.none(), verifyForgetPasswordOTP);
 
 //secured routes :
-router.route("/changepassword").post(upload.none(), updatePassword);
+router.route("/changepassword").patch(verifyJWT, upload.none(), updatePassword);
 router.route("/getuser").get(verifyJWT, getStudent);
 
 export default router;

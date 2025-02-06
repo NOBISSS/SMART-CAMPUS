@@ -59,64 +59,76 @@ const createNotice = asyncHandler(async (req, res) => {
 });
 
 const displayNotices = asyncHandler(async (req, res) => {
-  const notices = await Notice.aggregate([
-    {
-      $project: {
-        _id: 1,
-        NoticeHeading: 1,
-        NoticeDetails: 1,
-        semester: 1,
-        NoticeImage: 1,
-        createdAt: 1,
-        updatedAt: 1,
+  try {
+    const notices = await Notice.aggregate([
+      {
+        $project: {
+          _id: 1,
+          NoticeHeading: 1,
+          NoticeDetails: 1,
+          semester: 1,
+          NoticeImage: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
       },
-    },
-  ]);
-  if (!notices) {
-    throw new ApiError(300, "No notices found");
+    ]);
+    if (!notices) {
+      throw new ApiError(300, "No notices found");
+    }
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          notices,
+          `${notices.length} Notices fetched successfully`
+        )
+      );
+  } catch (err) {
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        notices,
-        `${notices.length} Notices fetched successfully`
-      )
-    );
 });
 const displayNoticesStudents = asyncHandler(async (req, res) => {
   const studentSemester = req.user.semester;
-  const notices = await Notice.aggregate([
-    {
-      $match: {
-        semester: studentSemester,
+  try {
+    const notices = await Notice.aggregate([
+      {
+        $match: {
+          semester: studentSemester,
+        },
       },
-    },
-    {
-      $project: {
-        _id: 1,
-        NoticeHeading: 1,
-        NoticeDetails: 1,
-        semester: 1,
-        NoticeImage: 1,
-        createdAt: 1,
-        updatedAt: 1,
+      {
+        $project: {
+          _id: 1,
+          NoticeHeading: 1,
+          NoticeDetails: 1,
+          semester: 1,
+          NoticeImage: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
       },
-    },
-  ]);
-  if (!notices) {
-    throw new ApiError(300, "No notices found");
+    ]);
+    if (!notices) {
+      throw new ApiError(300, "No notices found");
+    }
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          notices,
+          `${notices.length} Events fetched successfully`
+        )
+      );
+  } catch (err) {
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        notices,
-        `${notices.length} Events fetched successfully`
-      )
-    );
 });
 
 const updateNotice = asyncHandler(async (req, res) => {
@@ -141,39 +153,51 @@ const updateNotice = asyncHandler(async (req, res) => {
   } catch (err) {
     throw new ApiError(500, { message: "Failed to upload noticeImage" });
   }
-  const notice = await Notice.findByIdAndUpdate(
-    noticeId,
-    {
-      $set: {
-        NoticeHeading: newTitle,
-        NoticeDetails: newDesc,
-        semester: _.toNumber(semester),
-        NoticeImage: noticeImage?.secure_url,
+  try {
+    const notice = await Notice.findByIdAndUpdate(
+      noticeId,
+      {
+        $set: {
+          NoticeHeading: newTitle,
+          NoticeDetails: newDesc,
+          semester: _.toNumber(semester),
+          NoticeImage: noticeImage?.secure_url,
+        },
       },
-    },
-    { new: true }
-  );
-  if (!notice) {
-    throw new ApiError(404, "notice Not found");
-  }
-  // if (notice.noticeImage) { //get logic from vidshare and change it later on.
-  //   await deleteFromCloudinary(notice.noticeImage)
-  // }
-  await notice.save({ validateBeforeSave: false });
+      { new: true }
+    );
+    if (!notice) {
+      throw new ApiError(404, "notice Not found");
+    }
+    // if (notice.noticeImage) { //get logic from vidshare and change it later on.
+    //   await deleteFromCloudinary(notice.noticeImage)
+    // }
+    await notice.save({ validateBeforeSave: false });
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, notice, "notice Updated successfully"));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, notice, "notice Updated successfully"));
+  } catch (err) {
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
+  }
 });
 
 const deleteNotice = asyncHandler(async (req, res) => {
   const { noticeId } = req.params;
 
-  const notice = await Notice.findByIdAndDelete(noticeId);
-  if (!notice) throw new ApiError(404, "notice not found");
-  return res
-    .status(200)
-    .json(new ApiResponse(200, notice, "notice Deleted Successfully"));
+  try {
+    const notice = await Notice.findByIdAndDelete(noticeId);
+    if (!notice) throw new ApiError(404, "notice not found");
+    return res
+      .status(200)
+      .json(new ApiResponse(200, notice, "notice Deleted Successfully"));
+  } catch (err) {
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
+  }
 });
 
 export {

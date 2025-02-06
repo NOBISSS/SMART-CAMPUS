@@ -56,7 +56,7 @@ const registerStudent = asyncHandler(async (req, res) => {
     expiryAt.setMinutes(expiryAt.getMinutes() + 10);
     const tempOTP = await TempOTP.create({
       Gotp,
-      enrollmentId,
+      userId: enrollmentId,
       expiryAt,
       password,
     });
@@ -71,7 +71,9 @@ const registerStudent = asyncHandler(async (req, res) => {
         )
       );
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 const verifyOTP = asyncHandler(async (req, res) => {
@@ -91,7 +93,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
     if (!otpData) {
       throw new ApiError(404, { message: "Enter a valid OTP" });
     }
-    const enrollId = otpData.enrollmentId;
+    const enrollId = otpData.userId;
     const expiryDate = otpData.expiryAt;
     const isExpired = otpData.isExpired;
     const password = otpData.password;
@@ -99,7 +101,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
     if (!student) {
       throw new ApiError(400, { message: "Student not found" });
     }
-    if (isExpired || Date.now() > expiryDate) {
+    if (isExpired || Date.now() > expiryDate || student.isRegistered) {
       otpData.isExpired = true;
       await TempOTP.deleteOne({ Gotp: Gotp });
       throw new ApiError(404, { message: "OTP is expired, Generate new OTP" });
@@ -111,12 +113,16 @@ const verifyOTP = asyncHandler(async (req, res) => {
       await TempOTP.deleteOne({ Gotp: Gotp });
       return res
         .status(200)
-        .json(new ApiResponse(200, { student }, "User Registered Successfully"));
+        .json(
+          new ApiResponse(200, { student }, "User Registered Successfully")
+        );
     } else {
       throw new ApiError(404, { message: "Wrong OTP" });
     }
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -145,7 +151,9 @@ const loginStudent = asyncHandler(async (req, res) => {
       "-password -refreshToken"
     );
     if (!loggedInStudent) {
-      throw new ApiError(500, { message: "Something went wrong from our side" });
+      throw new ApiError(500, {
+        message: "Something went wrong from our side",
+      });
     }
     const options = {
       httpOnly: true,
@@ -166,7 +174,12 @@ const loginStudent = asyncHandler(async (req, res) => {
         )
       );
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    // throw new ApiError(err.status || 500, {
+    //   message: err.message || "Something went wrong from our side",
+    // });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -183,7 +196,7 @@ const updatePassword = asyncHandler(async (req, res) => {
     }
     student.$set({ password: newPassword });
     await student.save({ validateBeforeSave: false });
-  
+
     return res
       .status(200)
       .json(new ApiResponse(200, {}, "Password changed successfully"));
@@ -224,7 +237,9 @@ const forgetPassword = asyncHandler(async (req, res) => {
     await tempOTP.save({ validateBeforeSave: false });
     return res
       .status(200)
-      .json(new ApiResponse(200, { student, Gotp }, "OTP Generated sucessfully"));
+      .json(
+        new ApiResponse(200, { student, Gotp }, "OTP Generated sucessfully")
+      );
   } catch (err) {
     throw new ApiError(500, { message: "Something went wrong from our side" });
   }
@@ -266,7 +281,9 @@ const verifyForgetPasswordOTP = asyncHandler(async (req, res) => {
       await TempOTP.deleteOne({ Gotp: Gotp });
       return res
         .status(200)
-        .json(new ApiResponse(200, { student }, "Password changed successfully"));
+        .json(
+          new ApiResponse(200, { student }, "Password changed successfully")
+        );
     } else {
       throw new ApiError(404, { message: "Wrong OTP" });
     }

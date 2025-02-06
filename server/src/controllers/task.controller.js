@@ -30,7 +30,9 @@ const createTask = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, createdTask, "Task created successfully"));
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -48,7 +50,9 @@ const deleteTask = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, task, "Task Deleted Successfully"));
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -80,7 +84,9 @@ const updateTask = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, Updatetask, "Task Updatd Successfully"));
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -113,7 +119,9 @@ const getTasksBySemester = asyncHandler(async (req, res) => {
         )
       );
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -176,7 +184,9 @@ const setStatus = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, task, "Status updated successfully"));
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 

@@ -86,7 +86,9 @@ const displayEvents = asyncHandler(async (req, res) => {
         )
       );
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 const displayEventsStudents = asyncHandler(async (req, res) => {
@@ -117,7 +119,9 @@ const displayEventsStudents = asyncHandler(async (req, res) => {
         )
       );
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -163,12 +167,14 @@ const updateEvent = asyncHandler(async (req, res) => {
     //   await deleteFromCloudinary(event.EventImage)
     // }
     await event.save({ validateBeforeSave: false });
-  
+
     return res
       .status(200)
       .json(new ApiResponse(200, event, "Event Updated successfully"));
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -182,7 +188,9 @@ const deleteEvent = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, event, "Event Deleted Successfully"));
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -191,6 +199,5 @@ export {
   deleteEvent,
   displayEvents,
   displayEventsStudents,
-  updateEvent
+  updateEvent,
 };
-

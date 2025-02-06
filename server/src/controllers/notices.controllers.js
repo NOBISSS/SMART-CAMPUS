@@ -86,7 +86,9 @@ const displayNotices = asyncHandler(async (req, res) => {
         )
       );
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 const displayNoticesStudents = asyncHandler(async (req, res) => {
@@ -123,7 +125,9 @@ const displayNoticesStudents = asyncHandler(async (req, res) => {
         )
       );
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -174,7 +178,9 @@ const updateNotice = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, notice, "notice Updated successfully"));
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 
@@ -188,7 +194,9 @@ const deleteNotice = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, notice, "notice Deleted Successfully"));
   } catch (err) {
-    throw new ApiError(500, { message: "Something went wrong from our side" });
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
   }
 });
 

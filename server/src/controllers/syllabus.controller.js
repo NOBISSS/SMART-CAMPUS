@@ -47,4 +47,21 @@ const setSyllabus = asyncHandler(async (req, res) => {
   }
 });
 
-export { setSyllabus };
+const deleteSyllabus = asyncHandler(async (req, res) => {
+  const syllabusId = req.params.syllabusId;
+
+  try {
+    const syllabus = await Syllabus.findByIdAndDelete(syllabusId);
+
+    if (!syllabus) {
+      throw new ApiError(400, { message: "Syllabus not found" });
+    }
+    return res
+      .status(200)
+      .json(new ApiResponse(200, syllabus, "Syllabus deleted successfully"));
+  } catch (err) {
+    return res.status(err.statusCode).json(err.message);
+  }
+});
+
+export { deleteSyllabus, setSyllabus };

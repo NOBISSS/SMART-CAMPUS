@@ -4,6 +4,7 @@ import {
   deleteTask,
   getTasks,
   getTasksBySemester,
+  getTasksBySemesterStudents,
   setStatus,
   updateTask,
 } from "../controllers/task.controller.js";
@@ -21,7 +22,9 @@ router
   .route("/displaybysemester/:semester")
   .get(verifyJWTAdmin, getTasksBySemester);
 router.route("/displayall").get(verifyJWTAdmin, getTasks);
-router.route("/displaybysemesterstudent").get(verifyJWT, getTasksBySemester);
+router
+  .route("/displaybysemesterstudent")
+  .get(verifyJWT, getTasksBySemesterStudents);
 router.route("/setstatus/:taskId").patch(verifyJWT, upload.none(), setStatus);
 
 export default router;

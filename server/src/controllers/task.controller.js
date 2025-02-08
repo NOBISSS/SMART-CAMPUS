@@ -125,6 +125,41 @@ const getTasksBySemester = asyncHandler(async (req, res) => {
       .json(err.message || "Something went wrong from our side");
   }
 });
+const getTasksBySemesterStudents = asyncHandler(async (req, res) => {
+  const semester = req.user.semester;
+  try {
+    const tasks = await Tasks.aggregate([
+      {
+        $match: {
+          semester: _.toNumber(semester),
+        },
+      },
+      {
+        $project: {
+          taskDetail: 1,
+          semester: 1,
+        },
+      },
+    ]);
+    console.log(tasks);
+    if (tasks.length <= 0) {
+      throw new ApiError(400, "No Tasks found");
+    }
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          tasks,
+          `${tasks.length} Tasks fetched successfully`
+        )
+      );
+  } catch (err) {
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
+  }
+});
 const getTasks = asyncHandler(async (req, res) => {
   try {
     const tasks = await Tasks.aggregate([
@@ -232,4 +267,5 @@ export {
   getTasksBySemester,
   setStatus,
   updateTask,
+  getTasksBySemesterStudents
 };

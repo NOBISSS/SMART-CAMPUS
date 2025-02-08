@@ -91,12 +91,12 @@ const updateTask = asyncHandler(async (req, res) => {
 });
 
 const getTasksBySemester = asyncHandler(async (req, res) => {
-  const semester = req.body.semester;
+  const semester = req.params.semester;
   try {
     const tasks = await Tasks.aggregate([
       {
         $match: {
-          semester: 3,
+          semester: _.toNumber(semester),
         },
       },
       {
@@ -106,6 +106,7 @@ const getTasksBySemester = asyncHandler(async (req, res) => {
         },
       },
     ]);
+    console.log(tasks);
     if (tasks.length <= 0) {
       throw new ApiError(400, "No Tasks found");
     }

@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* *{
+/* {
     color:#fff;
 }
 
@@ -13,3 +13,16 @@ body{
 #tasklist::-webkit-scrollbar{
     display: none;
 } */
+
+@font-face {
+    font-family: "Poppins";
+    src: url(./assets/Poppins-Medium.ttf);
+}
+
+
+
+*{
+    font-family: 'Poppins';
+    font-weight: 400;
+}
+

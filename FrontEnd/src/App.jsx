@@ -14,11 +14,12 @@ function App() {
   return (
     <>
       {/* <Nav></Nav> */}
-       {/* <Login></Login> */}
+       
       
       
       <Routes>
-        <Route path='/AdminDash' element={<AdminDash/>}></Route>
+      <Route path='/*' element={<Login/>}></Route>
+        <Route  element={<AdminDash/>}></Route>
       <Route path='/TaskCRUD' element={<TaskCRUD/>}></Route>
       </Routes>
     </>

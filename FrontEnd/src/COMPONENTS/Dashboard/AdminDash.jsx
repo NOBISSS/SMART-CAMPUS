@@ -5,22 +5,37 @@ import { Link } from 'react-router-dom';
 import SideBar from '../Others/SideBar';
 
 export const AdminDash = () => {
-  const [task, setTask] = useState({ semester: "", taskDetails: "" });
+  const [task, setTask] = useState({taskDetails: "" , semester: ""});
 
   const handleChange = (e) => {
     setTask({ ...task, [e.target.name]: e.target.value });
   };
+  
 
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8000/api/v1/task/create", task);
-      alert("Task Created Successfully!");
-      setTask({ semester: "", taskDetails: "" }); // Reset form
+        const token = localStorage.getItem('token'); // Retrieve token
+
+        const response = await axios.post(
+            "http://localhost:8000/api/v1/task/create",
+            task,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Send token in header
+                    'Content-Type': 'application/json'
+                },
+                withCredentials: true // Include cookies if using session-based auth
+            }
+        );
+
+        alert("Task Created Successfully!");
+        setTask({ semester: "", taskDetails: "" });
     } catch (error) {
-      console.error("Error creating task:", error);
+        console.error("Error creating task:", error);
     }
-  };
+};
 
   return (
     <div className="container w-screen h-screen bg-slate-400 font-['gilroy'] text-white flex">
@@ -62,7 +77,6 @@ export const AdminDash = () => {
             className='text-black p-2 w-full' 
           />
           <br />
-
 
           <button type="submit" className="bg-blue-500 p-3 mt-5 text-white">
             Create Task

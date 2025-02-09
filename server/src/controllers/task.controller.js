@@ -91,12 +91,12 @@ const updateTask = asyncHandler(async (req, res) => {
 });
 
 const getTasksBySemester = asyncHandler(async (req, res) => {
-  const semester = req.body.semester;
+  const semester = req.params.semester;
   try {
     const tasks = await Tasks.aggregate([
       {
         $match: {
-          semester: 3,
+          semester: _.toNumber(semester),
         },
       },
       {
@@ -106,6 +106,76 @@ const getTasksBySemester = asyncHandler(async (req, res) => {
         },
       },
     ]);
+    console.log(tasks);
+    if (tasks.length <= 0) {
+      throw new ApiError(400, "No Tasks found");
+    }
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          tasks,
+          `${tasks.length} Tasks fetched successfully`
+        )
+      );
+  } catch (err) {
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
+  }
+});
+const getTasksBySemesterStudents = asyncHandler(async (req, res) => {
+  const semester = req.user.semester;
+  try {
+    const tasks = await Tasks.aggregate([
+      {
+        $match: {
+          semester: _.toNumber(semester),
+        },
+      },
+      {
+        $project: {
+          taskDetail: 1,
+          semester: 1,
+        },
+      },
+    ]);
+    console.log(tasks);
+    if (tasks.length <= 0) {
+      throw new ApiError(400, "No Tasks found");
+    }
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          tasks,
+          `${tasks.length} Tasks fetched successfully`
+        )
+      );
+  } catch (err) {
+    return res
+      .status(err.statusCode || 500)
+      .json(err.message || "Something went wrong from our side");
+  }
+});
+const getTasks = asyncHandler(async (req, res) => {
+  try {
+    const tasks = await Tasks.aggregate([
+      {
+        $project: {
+          taskDetail: 1,
+          semester: 1,
+        },
+      },
+      {
+        $sort: {
+          semester: 1,
+        },
+      },
+    ]);
+    console.log(tasks);
     if (tasks.length <= 0) {
       throw new ApiError(400, "No Tasks found");
     }
@@ -190,4 +260,12 @@ const setStatus = asyncHandler(async (req, res) => {
   }
 });
 
-export { createTask, deleteTask, getTasksBySemester, setStatus, updateTask };
+export {
+  createTask,
+  deleteTask,
+  getTasks,
+  getTasksBySemester,
+  setStatus,
+  updateTask,
+  getTasksBySemesterStudents
+};

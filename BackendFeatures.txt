@@ -1,0 +1,19 @@
+--REGISTERATION PAGE--------
+  1.Getting Student Data and storing it to DB.
+  2.Checking If Student already exist or not, if yes than display error.
+  3.Getting a Strong Password. defining the what password must include.
+  4.Defining the maximum length or StudentNAME.
+  5.Getting Email and sending the confirmation code and validating It.
+  6.OPTIONAL: SignIn via Google,GitHub,Facebook. 	
+
+--LOGIN PAGE--------
+  1.Checking Student Exist. If yes redirect Student to Home. Else on Registeration Page.
+  2.Validating StudentName,Password/Email.
+  3.We can also give an option to Login via OTP. and validate it.
+  4.Option to Forget password- (Getting OTP via email and updating old password with New      password.)
+  
+--Forget Password Page---
+  1.Checking Student Exist By Studentname or Email. If yes than send the OTP.
+  2.Validating OTP.
+  3.If OTP is true than display 2 text boxes to change password.
+  4.UPDATING the password in DB and redirecting Student to LOGIN/HOME page.

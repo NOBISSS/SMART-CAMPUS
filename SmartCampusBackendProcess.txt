@@ -1,0 +1,118 @@
+  --STUDENT DATABASE----- Pre Determined
+     1.EnrollmentId	
+     2.FullName
+     3.FirstName
+     4.LastName
+     5.DateOfBirth
+     6.Semester - refers to Semester DB
+     7.EmailId
+     8.MobileNo
+     9.Gender
+     10.Password - After Registration
+     11.Registered - TRUE/FALSE
+
+  --ADMIN DATABASE----- Pre Determined&&Registered.
+     1.AdminId
+     2.FullName
+     3.FirstName
+     4.LastName
+     5.EmailId
+     6.Password
+
+  --SEMESTER DATABASE-----Pre Determined
+     1.SemesterNo PK
+     2.Year
+     3.STDCount
+
+  --SYLLABUS DATABASE-----
+     1.SubjectName
+     2.Semester refers to Semester_DB
+     3.PDF/IMG of SLB
+
+  --NOTICES DATABASE-----
+     1.NoticeHeading
+     2.NoticeDetails
+     3.NoticeDateTime
+     4.UpdatedNoticeDateTime
+     5.Semester refers to Semester_DB
+
+  --Events DATABASE-----
+     1.EventHeading
+     2.EventDetails
+     3.EventDateTime
+     4.UpdatedEventDateTime
+     5.EventDate
+
+  --Marks DATABASE-----
+     1.SubjectName
+     2.SubjectMarks
+     3.EnrollId refers to Students_DB(EnrollId)
+     4.semester Refres to Semester(SemesterNo)
+
+  --REGISTRATION PROCESS----- DONE with OTP
+     1.Taking EnrollID and Email as Input;
+     2.IF it matches from the STD_DB Send OTP.
+     3.Validate OTP IF it success than Get input of Password ELSE send Invalid OTP.
+     4.Give Option to RESEND OTP or back to the Register Page.
+     5.ELSE Show Invalid ID or MAIL.
+     6.Save the PASSWORD in STD_DB and mark Registered AS TRUE.
+     7.Redirect to Home page of it's respective semester.
+
+  --LOGIN PROCESS----- Done in both ways
+     1.Taking EnrollID/Email and Password as Input;	
+     2.IF it matches from the STD_DB Redirect to Home page of it's respective semester.
+     3.ELSE Display Invalid ID/MAIL.
+     4.Give Option to Forget Password or to the Register Page.
+
+  --FORGET PASSWORD PROCESS----- Done
+     1.Taking EnrollID/Email as Input;
+     2.IF it matches from the STD_DB Send OTP.
+     3.ELSE Display Invalid ID/MAIL.
+     4.Validate OTP and Take Password as Input and Update it from STD_DB.
+     5.Redirect user to Login Page.
+
+  --Home Page for Admins------
+     1.Show "Welcome, Admin_name" on top.
+     2.Under the above message show different Feilds like 
+		1.Create Event.
+		2.Send Notice.
+		3.Update/Set Syllabus.
+		4.Send Marks.
+     3.After user click on "+" icon in any oḟ the above fields
+	Get input of it's title,discription,attachements 
+			And Most IMPORTANT "semester".
+     4.After submission of above, we need to store the field in it's respective DB.
+	And display the message "Created SuccessFully" Or "Failure".
+     5.Under the Create field menu we need to provide them to SEE ALL.like see all 		       events.
+     6.As admin clicks on it Admin can see all the created events/notice etc. of it's 			respective field.
+     7.We also have to give the feature to delete and update the field.
+     8.On the left side menu bar Admin can see the option to see all the students 		       registered Semester wise. Also can check the marks of every individual.
+
+  --Home Page for Students------
+     1.Show "Welcome, Student_name" on top.
+     2.Under the above message show different Feilds like 
+		1.See Event.
+		2.See Notice.
+		3.see Syllabus.
+		4.See Marks.
+     3.As Student clicks on it Student can see all the events,notice,etc. of it's 			respective semester.
+     4.On the left side menu bar Student can see it's profile, Marks, etc.
+
+	1.Attendance.
+	2.Notes.
+	3.Tasks. Status : [StudentId,Status];
+Article on NodeJs and React - "https://dev.to/idurar/how-to-secure-reactjs-app-auth-with-redux-and-nodejs-4ma3","https://dev.to/ebereplenty/authentication-with-nodejs-and-mongodb-part-1-10pn", "https://www.freecodecamp.org/news/securing-node-js-restful-apis-with-json-web-tokens-9f811a92bb52/"
+
+React-Admin - "https://marmelab.com/react-admin/Tutorial.html"
+
+Attendance Demo - https://github.com/shashiben/Hostel-Management/blob/master/server/models/attendance.js
+
+OTP - Store hash of the Mobile no + current Time/Date, Authenticater npm
+neon.tech : prisma db
+twillio,MSG91,DLT - otp gen- message
+
+imagekit.io- checkout
+
+CSV Writer npm - exporting csv data files.
+Excel Export: csv-writer library
+Word Export: officegen library

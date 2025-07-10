@@ -1,11 +1,11 @@
 import _ from "lodash";
-import { Student } from "../models/students.model.js";
-import { TempOTP } from "../models/tempOTPs.model.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { checkInput } from "../utils/inputChecker.util.js";
-import sendMail from "../utils/mailer.util.js";
+import { Student } from "../../models/students.model.js";
+import { TempOTP } from "../../models/tempOTPs.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { ApiResponse } from "../../utils/ApiResponse.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { checkInput } from "../../utils/inputChecker.util.js";
+import sendMail from "../../utils/mailer.util.js";
 
 const generateAccessAndRefreshToken = async (enrollmentId) => {
   try {

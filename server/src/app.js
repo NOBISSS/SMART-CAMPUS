@@ -1,13 +1,13 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
-import Adminrouter from "./routes/admin.route.js";
-import eventRouter from "./routes/event.route.js";
-import hybridRouter from "./routes/hybrid.route.js";
-import noticeRouter from "./routes/notice.route.js";
-import studentRouter from "./routes/student.route.js";
-import syllabusRouter from "./routes/syllabus.route.js";
-import taskRouter from "./routes/task.route.js";
+import Adminrouter from "./routes/v1/admin.route.js";
+import eventRouter from "./routes/v1/event.route.js";
+import hybridRouter from "./routes/v1/hybrid.route.js";
+import noticeRouter from "./routes/v1/notice.route.js";
+import studentRouter from "./routes/v1/student.route.js";
+import syllabusRouter from "./routes/v1/syllabus.route.js";
+import taskRouter from "./routes/v1/task.route.js";
 
 const app = express();
 

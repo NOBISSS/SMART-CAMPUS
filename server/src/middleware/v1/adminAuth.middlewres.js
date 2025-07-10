@@ -1,14 +1,14 @@
 import jwt from "jsonwebtoken";
-import { Admin } from "../models/admins.model.js";
-import { ApiError } from "../utils/ApiError.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { Admin } from "../../models/admins.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 
 const verifyJWT = asyncHandler(async (req, _, next) => {
   const token =
     req.cookies.accessTokenAdmin ||
     req.header("Authorization")?.replace("Bearer ", "");
   if (!token) {
-    throw new ApiError(401, {message:"Unauthorized token"});
+    throw new ApiError(401, { message: "Unauthorized token" });
   }
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_ACCESS_TOKEN);

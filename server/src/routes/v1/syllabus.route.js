@@ -5,10 +5,10 @@ import {
   getSyllabusForStudents,
   setSyllabus,
   updateSyllabus,
-} from "../controllers/syllabus.controller.js";
-import verifyJWTAdmin from "../middleware/adminAuth.middlewres.js";
-import { upload } from "../middleware/multer.middlewares.js";
-import verifyJWTStudent from "../middleware/studentAuth.middlewres.js";
+} from "../../controllers/v1/syllabus.controller.js";
+import verifyJWTAdmin from "../../middleware/v1/adminAuth.middlewres.js";
+import { upload } from "../../middleware/v1/multer.middlewares.js";
+import verifyJWTStudent from "../../middleware/v1/studentAuth.middlewres.js";
 const router = Router();
 
 router

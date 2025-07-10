@@ -1,11 +1,11 @@
-import { Event } from "../models/events.model.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { Event } from "../../models/events.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { ApiResponse } from "../../utils/ApiResponse.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 import {
   deleteFromCloudinary,
   uploadOnCloudinary,
-} from "../utils/cloudinary.js";
+} from "../../utils/cloudinary.js";
 
 const CreateEvent = asyncHandler(async (req, res) => {
   const { eventTitle, eventDisc, eventDate } = req.body;

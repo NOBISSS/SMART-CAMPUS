@@ -1,14 +1,14 @@
 import { Router } from "express";
+import verifyJWT from "../../middleware/v1/adminAuth.middlewres.js";
+import { upload } from "../../middleware/v1/multer.middlewares.js";
+import verifyJWTStudent from "../../middleware/v1/studentAuth.middlewres.js";
 import {
   CreateEvent,
   deleteEvent,
   displayEvents,
   displayEventsStudents,
   updateEvent,
-} from "../controllers/event.controllers.js";
-import verifyJWT from "../middleware/adminAuth.middlewres.js";
-import { upload } from "../middleware/multer.middlewares.js";
-import verifyJWTStudent from "../middleware/studentAuth.middlewres.js";
+} from "../../controllers/v1/event.controllers.js";
 const router = Router();
 
 router

@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import { Student } from "../models/students.model.js";
-import { ApiError } from "../utils/ApiError.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { Student } from "../../models/students.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 
 const verifyJWT = asyncHandler(async (req, _, next) => {
   const token =

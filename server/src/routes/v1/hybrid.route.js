@@ -4,7 +4,7 @@ import {
   hybridForgetPassword,
   hybridLogin,
   verifyHybridOTP,
-} from "../controllers/hybrid.controller.js";
+} from "../../controllers/v1/hybrid.controller.js";
 
 const router = Router();
 const upload = multer();

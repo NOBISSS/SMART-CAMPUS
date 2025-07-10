@@ -1,0 +1,23 @@
+public - it will include temp files like images and videos uploaded by the user. and than 	w'll store it to cloudinary cloud and we can access from there whenever we want.
+
+.env - It includes some keys that shouldn't be made public while uploading on github or 		making project live like API_KEYS or some SECRET_KEYs.
+
+.prettierIngnore: it will be ignored by the prettier module while making the code 		readable and well aligned it includes some env files, module files etc.
+
+srcFolder - it includes all important folders and pages of our website
+
+controllerFolder: it includes some healthcheckers that uses some asyncHandlers and 		ApiResponse to check the status of the server
+
+dbFolder: it uses mongoose to build the connection with the mongoDB database and 	  constant.js file to get the name of database and exports that connection
+
+middleWares.multer.js - it's a node library to easily store the Images and videos on 			cloudinary and on our local system.
+
+modelsFolder - it includes all the DB models which are to be used in MongoDB to store the 	       data to server
+
+routesFolder: it imports healthCheck controllers and directly check whatever page we want 		to check by giving controll to the healthCheckrs
+
+utilsFolder: it includes all responses, erros to be send to the user and connection of 		cloudinary.
+
+app.js: it's main page of the website
+
+index.js: it's the file where all the backend code combines and 

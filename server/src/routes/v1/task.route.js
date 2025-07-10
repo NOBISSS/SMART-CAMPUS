@@ -7,10 +7,10 @@ import {
   getTasksBySemesterStudents,
   setStatus,
   updateTask,
-} from "../controllers/task.controller.js";
-import verifyJWTAdmin from "../middleware/adminAuth.middlewres.js";
-import { upload } from "../middleware/multer.middlewares.js";
-import { default as verifyJWT } from "../middleware/studentAuth.middlewres.js";
+} from "../../controllers/v1/task.controller.js";
+import verifyJWTAdmin from "../../middleware/v1/adminAuth.middlewres.js";
+import { upload } from "../../middleware/v1/multer.middlewares.js";
+import { default as verifyJWT } from "../../middleware/v1/studentAuth.middlewres.js";
 const router = Router();
 
 router.route("/create").post(verifyJWTAdmin, upload.none(), createTask);

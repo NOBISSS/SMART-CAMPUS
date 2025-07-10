@@ -1,9 +1,9 @@
 import _ from "lodash";
-import { Syllabus } from "../models/syllabus.model.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { Syllabus } from "../../models/syllabus.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { ApiResponse } from "../../utils/ApiResponse.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { uploadOnCloudinary } from "../../utils/cloudinary.js";
 
 const setSyllabus = asyncHandler(async (req, res) => {
   const { subjectName, semester } = req.body;
@@ -164,7 +164,7 @@ const checkSyllabusToAdmin = asyncHandler(async (req, res) => {
   }
 });
 
-const getSyllabusForStudents = asyncHandler(async (req,res) => {
+const getSyllabusForStudents = asyncHandler(async (req, res) => {
   const semester = req.user.semester;
   if (semester === "")
     throw new ApiError(400, { message: "Semester is required" });
@@ -210,6 +210,12 @@ const getSyllabusForStudents = asyncHandler(async (req,res) => {
         )
       );
   }
-})
+});
 
-export { checkSyllabusToAdmin, deleteSyllabus, setSyllabus, updateSyllabus,getSyllabusForStudents };
+export {
+  checkSyllabusToAdmin,
+  deleteSyllabus,
+  getSyllabusForStudents,
+  setSyllabus,
+  updateSyllabus,
+};

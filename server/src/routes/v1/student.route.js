@@ -8,8 +8,8 @@ import {
   updatePassword,
   verifyForgetPasswordOTP,
   verifyOTP,
-} from "../controllers/student.controller.js";
-import verifyJWT from "../middleware/studentAuth.middlewres.js";
+} from "../../controllers/v1/student.controller.js";
+import verifyJWT from "../../middleware/v1/studentAuth.middlewres.js";
 const router = Router();
 const upload = multer();
 

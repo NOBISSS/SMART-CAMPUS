@@ -1,12 +1,12 @@
 import _ from "lodash";
-import { Notice } from "../models/notices.model.js";
-import { ApiError } from "../utils/ApiError.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { Notice } from "../../models/notices.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { ApiResponse } from "../../utils/ApiResponse.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 import {
   deleteFromCloudinary,
   uploadOnCloudinary,
-} from "../utils/cloudinary.js";
+} from "../../utils/cloudinary.js";
 
 const createNotice = asyncHandler(async (req, res) => {
   const { noticeTitle, noticeDisc, semester } = req.body;

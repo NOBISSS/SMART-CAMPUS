@@ -1,0 +1,96 @@
+{
+    "data": {
+        "statusCode": 200,
+        "data": {
+            "_id": "677c11ec73958db61acfbc0d",
+            "username": "fnfnf",
+            "email": "fnfn@g.com",
+            "fullname": "fnfn",
+            "avatar": "",
+            "coverImage": "",
+            "watchHistory": [],
+            "createdAt": "2025-01-06T17:25:00.716Z",
+            "updatedAt": "2025-01-06T17:25:00.716Z",
+            "__v": 0
+        },
+        "message": "User registered Successfully",
+        "success": true
+    },
+    "status": 201,
+    "statusText": "Created",
+    "headers": {
+        "content-length": "306",
+        "content-type": "application/json; charset=utf-8"
+    },
+    "config": {
+        "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+        },
+        "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+        ],
+        "transformRequest": [
+            null
+        ],
+        "transformResponse": [
+            null
+        ],
+        "timeout": 0,
+        "xsrfCookieName": "XSRF-TOKEN",
+        "xsrfHeaderName": "X-XSRF-TOKEN",
+        "maxContentLength": -1,
+        "maxBodyLength": -1,
+        "env": {},
+        "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "method": "post",
+        "url": "http://127.0.0.1:8000/api/v1/users/register/",
+        "data": {}
+    },
+    "request": {}
+}
+//Error response:
+{
+    "message": "Request failed with status code 409",
+    "name": "AxiosError",
+    "stack": "AxiosError: Request failed with status code 409\n    at Qe (https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js:1:31804)\n    at XMLHttpRequest.y (https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js:1:36641)\n    at e.<anonymous> (https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js:1:48621)\n    at p (https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js:1:3448)\n    at Generator.<anonymous> (https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js:1:4779)\n    at Generator.throw (https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js:1:3858)\n    at p (https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js:1:9996)\n    at u (https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js:1:10235)",
+    "config": {
+        "transitional": {
+            "silentJSONParsing": true,
+            "forcedJSONParsing": true,
+            "clarifyTimeoutError": false
+        },
+        "adapter": [
+            "xhr",
+            "http",
+            "fetch"
+        ],
+        "transformRequest": [
+            null
+        ],
+        "transformResponse": [
+            null
+        ],
+        "timeout": 0,
+        "xsrfCookieName": "XSRF-TOKEN",
+        "xsrfHeaderName": "X-XSRF-TOKEN",
+        "maxContentLength": -1,
+        "maxBodyLength": -1,
+        "env": {},
+        "headers": {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "method": "post",
+        "url": "http://127.0.0.1:8000/api/v1/users/register/",
+        "data": {}
+    },
+    "code": "ERR_BAD_REQUEST",
+    "status": 409
+}
